@@ -43,7 +43,6 @@ public class MainWindowViewModel : BindableBase
         set => SetProperty(ref _processMems, value);
     }
 
-
     public MainWindowViewModel()
     {
         ProcessMems = new ObservableCollection<ProcessMem>();
