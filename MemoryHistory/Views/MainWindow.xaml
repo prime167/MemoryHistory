@@ -9,7 +9,7 @@
         xmlns:wpf="clr-namespace:InteractiveDataDisplay.WPF;assembly=InteractiveDataDisplay.WPF" xmlns:viewmodels="clr-namespace:MemoryHistory.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
         xmlns:models="clr-namespace:MemoryHistory.Models"
         Topmost="True" SizeToContent="Height"
-        Width="400">
+        Width="300">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
