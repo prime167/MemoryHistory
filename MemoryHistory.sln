@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.31911.260
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemoryHistory", "MemoryHistory\MemoryHistory.csproj", "{03BA0AE1-DC98-4117-8D87-9B4E646CF3C1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InteractiveDataDisplay.WPF", "..\..\..\work\git\HostPc_C103M\appshell\src\InteractiveDataDisplay.WPF\InteractiveDataDisplay.WPF.csproj", "{2D34544C-2DF2-4B20-A43A-6C8D2DF3DD82}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{03BA0AE1-DC98-4117-8D87-9B4E646CF3C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03BA0AE1-DC98-4117-8D87-9B4E646CF3C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03BA0AE1-DC98-4117-8D87-9B4E646CF3C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03BA0AE1-DC98-4117-8D87-9B4E646CF3C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D34544C-2DF2-4B20-A43A-6C8D2DF3DD82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D34544C-2DF2-4B20-A43A-6C8D2DF3DD82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D34544C-2DF2-4B20-A43A-6C8D2DF3DD82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D34544C-2DF2-4B20-A43A-6C8D2DF3DD82}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6D51C533-08A1-433A-8088-1E9830EA750A}
+	EndGlobalSection
+EndGlobal
