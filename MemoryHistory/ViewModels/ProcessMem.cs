@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using System.Windows;
 using Prism.Mvvm;
 namespace MemoryHistory.Models;
@@ -32,4 +33,6 @@ public class ProcessMem:BindableBase
         get => _processDisplayName;
         set => SetProperty(ref _processDisplayName, value);
     }
+
+    public IMovingAverage MovingAverage;
 }

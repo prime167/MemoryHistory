@@ -7,15 +7,22 @@ using System.Windows;
 using System.Windows.Threading;
 using MemoryHistory.Models;
 using Prism.Mvvm;
+using NLog;
+using System.Runtime.ConstrainedExecution;
 
 namespace MemoryHistory.ViewModels;
 
 public class MainWindowViewModel : BindableBase
 {
     public int Keep { get; set; } = 60 * 30;
+    public int SampleCount { get; set; } = 6;
+
     private readonly DateTime _startTime;
 
     private string _title = "Memory Monitor";
+
+    private Logger _logger = LogManager.GetCurrentClassLogger();
+
     public string Title
     {
         get => _title;
@@ -56,7 +63,8 @@ public class MainWindowViewModel : BindableBase
         {
             { "Vivaldi", "Vivaldi" },
             { "msedge", "Edge" },
-            { "MemoryHistory", "Self" }
+            { "Chrome", "Chrome" },
+            { "MemoryHistory", "Self" },
         };
 
         foreach (var process in rd)
@@ -68,7 +76,8 @@ public class MainWindowViewModel : BindableBase
                 {
                     MemCurve = new ObservableCollection<Point>(),
                     ProcessName = process.Key,
-                    ProcessDisplayName = process.Value
+                    ProcessDisplayName = process.Value,
+                    MovingAverage = new SimpleMovingAverage(5)
                 };
                 ProcessMems.Add(pm);
             }
@@ -78,30 +87,44 @@ public class MainWindowViewModel : BindableBase
     private void CallBack(object sender, EventArgs e)
     {
         var ts = DateTime.Now - _startTime;
-        var seconds = ts.TotalSeconds;
+        int seconds = (int)ts.TotalSeconds;
 
         Time = ts.ToString(@"hh\:mm\:ss");
         var memUsage = Util.GetMemoryUsage();
         SystemMemUsage = memUsage;
-        foreach (ProcessMem pm in ProcessMems)
+        try
         {
-            var ps = Process.GetProcessesByName(pm.ProcessName);
-            var total = 0.0;
-            foreach (var v in ps)
+            foreach (ProcessMem pm in ProcessMems)
             {
-                var s = Math.Round(v.WorkingSet64 / 1024.0 / 1024.0, 2);
-                total += s;
+                var ps = Process.GetProcessesByName(pm.ProcessName);
+                var total = 0.0;
+                foreach (var p in ps)
+                {
+                    if (!p.HasExited)
+                    {
+                        p.Refresh();
+                        var s = Math.Round(p.PrivateMemorySize64 / 1024.0 / 1024.0, 2);
+                        total += s;
+                    }
+                }
+
+                total = Math.Round(total, 2);
+
+                var r = pm.MovingAverage.Update(total);
+                pm.MemCurve.Add(new Point(seconds, r));
+
+                if (pm.MemCurve.Count >= Keep)
+                {
+                    pm.MemCurve = new ObservableCollection<Point>(pm.MemCurve.TakeLast(Keep));
+                }
+
+                pm.BottomStr = pm.ProcessDisplayName + " " + total.ToString("#.00").PadLeft(12) + " MB";
             }
 
-            total = Math.Round(total, 2);
-            pm.MemCurve.Add(new Point(seconds, total));
-
-            if (pm.MemCurve.Count >= Keep)
-            {
-                pm.MemCurve = new ObservableCollection<Point>(pm.MemCurve.TakeLast(Keep));
-            }
-
-            pm.BottomStr = pm.ProcessDisplayName + " " + total.ToString("#.00").PadLeft(12) + " MB";
+        }
+        catch (Exception exception)
+        {
+            _logger.Error(exception,exception.Message);
         }
     }
 }
