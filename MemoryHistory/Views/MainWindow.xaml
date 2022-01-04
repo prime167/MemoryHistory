@@ -13,7 +13,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="400"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -36,13 +36,14 @@
                 <x:Array Type="{x:Type models:ProcessMem}">
                     <models:ProcessMem BottomStr="msedge"/>
                     <models:ProcessMem BottomStr="vivaldi"/>
+                    <models:ProcessMem BottomStr="firefox"/>
                     <models:ProcessMem BottomStr="vs"/>
                 </x:Array>
             </d:ItemsControl.ItemsSource>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border Grid.Row="3" BorderBrush="Green" BorderThickness="1" Padding="5" Margin="3,5">
-                        <wpf:Chart 
+                    <Border Grid.Row="3" BorderBrush="Green" BorderThickness="1" Padding="5" Margin="3,5" Visibility="{Binding Visibility}">
+                        <wpf:Chart Height="120"
                             Background="{DynamicResource SecondaryRegionBrush}"
                             BottomTitle="{Binding BottomStr}"
                             LeftTitle="MB"

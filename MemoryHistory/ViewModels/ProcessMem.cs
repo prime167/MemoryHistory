@@ -34,5 +34,14 @@ public class ProcessMem:BindableBase
         set => SetProperty(ref _processDisplayName, value);
     }
 
+    private Visibility _visibility;
+    public Visibility Visibility
+    {
+        get => _visibility;
+        set => SetProperty(ref _visibility, value);
+    }
+
     public IMovingAverage MovingAverage;
+
+    public int DecimalCount { get; set; } = 2;
 }

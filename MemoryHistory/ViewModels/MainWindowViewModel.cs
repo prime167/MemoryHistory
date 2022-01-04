@@ -8,20 +8,20 @@ using System.Windows.Threading;
 using MemoryHistory.Models;
 using Prism.Mvvm;
 using NLog;
-using System.Runtime.ConstrainedExecution;
 
 namespace MemoryHistory.ViewModels;
 
 public class MainWindowViewModel : BindableBase
 {
     public int Keep { get; set; } = 60 * 30;
-    public int SampleCount { get; set; } = 6;
+
+    public int SampleCount { get; set; } = 11;
 
     private readonly DateTime _startTime;
 
     private string _title = "Memory Monitor";
 
-    private Logger _logger = LogManager.GetCurrentClassLogger();
+    private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
     public string Title
     {
@@ -59,26 +59,28 @@ public class MainWindowViewModel : BindableBase
         timer.Tick += CallBack;
         timer.Start();
         _startTime = DateTime.Now;
-        Dictionary<string, string> rd = new Dictionary<string, string>
+        List<ProcessInfo1> rd = new List<ProcessInfo1>
         {
-            { "Vivaldi", "Vivaldi" },
-            { "msedge", "Edge" },
-            { "Chrome", "Chrome" },
-            { "MemoryHistory", "Self" },
+            new ProcessInfo1 {ProcessName = "Vivaldi", ProcessDisplayName = "Vivaldi", DecimalCount = 1},
+            new ProcessInfo1 {ProcessName = "msedge", ProcessDisplayName = "Edge", DecimalCount = 1},
+            new ProcessInfo1 {ProcessName = "Firefox", ProcessDisplayName = "Firefox", DecimalCount = 1},
+            new ProcessInfo1 {ProcessName = "MemoryHistory", ProcessDisplayName = "本程序", DecimalCount = 0},
         };
 
         foreach (var process in rd)
         {
-            var ps = Process.GetProcessesByName(process.Key);
-            if (ps.Any())
+            //var ps = Process.GetProcessesByName(process.Key);
+            //if (ps.Any())
             {
                 var pm = new ProcessMem
                 {
                     MemCurve = new ObservableCollection<Point>(),
-                    ProcessName = process.Key,
-                    ProcessDisplayName = process.Value,
-                    MovingAverage = new SimpleMovingAverage(5)
+                    ProcessName = process.ProcessName,
+                    ProcessDisplayName = process.ProcessDisplayName,
+                    MovingAverage = new SimpleMovingAverage(SampleCount),
+                    DecimalCount = process.DecimalCount,
                 };
+
                 ProcessMems.Add(pm);
             }
         }
@@ -108,7 +110,15 @@ public class MainWindowViewModel : BindableBase
                     }
                 }
 
-                total = Math.Round(total, 2);
+                total = Math.Round(total, pm.DecimalCount);
+                //if (total == 0)
+                //{
+                //    pm.Visibility = Visibility.Collapsed;
+                //}
+                //else
+                //{
+                //    pm.Visibility = Visibility.Visible;
+                //}
 
                 var r = pm.MovingAverage.Update(total);
                 pm.MemCurve.Add(new Point(seconds, r));
@@ -118,13 +128,12 @@ public class MainWindowViewModel : BindableBase
                     pm.MemCurve = new ObservableCollection<Point>(pm.MemCurve.TakeLast(Keep));
                 }
 
-                pm.BottomStr = pm.ProcessDisplayName + " " + total.ToString("#.00").PadLeft(12) + " MB";
+                pm.BottomStr = pm.ProcessDisplayName + " " + total.ToString().PadLeft(12) + " MB";
             }
-
         }
         catch (Exception exception)
         {
-            _logger.Error(exception,exception.Message);
+            _logger.Error(exception, exception.Message);
         }
     }
 }
