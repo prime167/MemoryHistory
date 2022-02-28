@@ -8,8 +8,14 @@
         mc:Ignorable="d"
         xmlns:wpf="clr-namespace:InteractiveDataDisplay.WPF;assembly=InteractiveDataDisplay.WPF" xmlns:viewmodels="clr-namespace:MemoryHistory.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
         xmlns:models="clr-namespace:MemoryHistory.Models"
+        xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
         Topmost="True" SizeToContent="Height"
         Width="300">
+    <b:Interaction.Triggers>
+        <b:EventTrigger EventName="Loaded">
+            <b:InvokeCommandAction Command="{Binding LoadedCmd}"/>
+        </b:EventTrigger>
+    </b:Interaction.Triggers>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
