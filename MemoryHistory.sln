@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InteractiveDataDisplay.WPF"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemoryHistory", "MemoryHistory\MemoryHistory.csproj", "{145E3809-1357-4139-8D22-28D826A6E079}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemHistoryWinform", "MemHistoryWinform\MemHistoryWinform.csproj", "{E1332B82-38B3-4ED7-8915-A93CA3A59044}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{145E3809-1357-4139-8D22-28D826A6E079}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{145E3809-1357-4139-8D22-28D826A6E079}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{145E3809-1357-4139-8D22-28D826A6E079}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1332B82-38B3-4ED7-8915-A93CA3A59044}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1332B82-38B3-4ED7-8915-A93CA3A59044}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1332B82-38B3-4ED7-8915-A93CA3A59044}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1332B82-38B3-4ED7-8915-A93CA3A59044}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
