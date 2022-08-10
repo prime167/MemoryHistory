@@ -1,34 +1,38 @@
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Windows;
 using NLog;
 using ScottPlot;
-using Timer = System.Threading.Timer;
 using ScottPlot.Plottable;
-using System.Reflection;
 
-namespace MemHistoryWinform
+namespace MemoryHistoryWpf
 {
-    public partial class Form1 : Form
+    public partial class MainWindow : Window
     {
         private Logger _logger = LogManager.GetCurrentClassLogger();
 
         private readonly List<ProcessPlotInfo> _processPlotInfos = new List<ProcessPlotInfo>(10);
 
-        public Form1()
+        public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
             var me = Assembly.GetEntryAssembly().GetName().Name;
-            var ps1 = new ProcessPlotInfo("msedge", 120, formsPlot1);
-            var ps2 = new ProcessPlotInfo("msedge", 12, formsPlot2);
+            var ps1 = new ProcessPlotInfo("msedge", 120, WpfPlot1);
+            var ps2 = new ProcessPlotInfo("msedge", 12, WpfPlot2);
 
-            var ps3 = new ProcessPlotInfo(me, 120, formsPlot3);
-            var ps4 = new ProcessPlotInfo(me, 12, formsPlot4);
+            var ps3 = new ProcessPlotInfo(me, 120, WpfPlot3);
+            var ps4 = new ProcessPlotInfo(me, 12, WpfPlot4);
 
-            var ps5 = new ProcessPlotInfo("vivaldi", 120, formsPlot5);
-            var ps6 = new ProcessPlotInfo("vivaldi", 12, formsPlot6);
+            var ps5 = new ProcessPlotInfo("vivaldi", 120, WpfPlot5);
+            var ps6 = new ProcessPlotInfo("vivaldi", 12, WpfPlot6);
 
             _processPlotInfos.Add(ps1);
             _processPlotInfos.Add(ps2);
@@ -40,9 +44,6 @@ namespace MemHistoryWinform
             foreach (ProcessPlotInfo pi in _processPlotInfos)
             {
                 pi.FormPlot.Configuration.DoubleClickBenchmark = false;
-                //formsPlot1.Plot.SetAxisLimits(0, null, 0, null);
-                //formsPlot1.Plot.SetOuterViewLimits(0, 60, 0, 9000);
-                pi.FormPlot.MouseDoubleClick += formsPlot1_MouseDoubleClick;
                 pi.FormPlot.Plot.Title($"{pi.Name}");
                 pi.FormPlot.Plot.YLabel("Memory (MB)");
                 pi.FormPlot.Plot.XLabel("Time (min)");
@@ -60,14 +61,6 @@ namespace MemHistoryWinform
                 pi.StartPlot();
             }
         }
-
-        private void formsPlot1_MouseDoubleClick(object? sender, MouseEventArgs e)
-        {
-            foreach (var pi in _processPlotInfos)
-            {
-                pi.FormPlot.Plot.AxisAuto();
-            }
-        }
     }
 
     public class ProcessPlotInfo
@@ -80,14 +73,14 @@ namespace MemHistoryWinform
 
         public SignalPlot SignalPlot;
 
-        public FormsPlot FormPlot;
+        public WpfPlot FormPlot;
 
         private double memoryUsed;
 
         private Timer updateMemoryTimer;
         private Timer refreshTimer;
 
-        public ProcessPlotInfo(string processName, int time, FormsPlot formPlot)
+        public ProcessPlotInfo(string processName, int time, WpfPlot formPlot)
         {
             Name = processName;
             Time = time;
@@ -117,7 +110,7 @@ namespace MemHistoryWinform
 
             try
             {
-                FormPlot.Invoke(() =>
+                FormPlot.Dispatcher.Invoke(() =>
                 {
                     FormPlot.Plot.AxisAuto();
                     FormPlot.Refresh();
@@ -138,7 +131,7 @@ namespace MemHistoryWinform
         {
             try
             {
-                FormPlot.Invoke(() =>
+                FormPlot.Dispatcher.Invoke(() =>
                 {
                     FormPlot.Plot.AxisAuto();
                     FormPlot.Refresh();
@@ -149,4 +142,5 @@ namespace MemHistoryWinform
             }
         }
     }
+
 }
