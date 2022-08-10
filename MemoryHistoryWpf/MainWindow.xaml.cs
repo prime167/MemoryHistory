@@ -8,6 +8,7 @@ using System.Windows;
 using NLog;
 using ScottPlot;
 using ScottPlot.Plottable;
+using ScottPlot.Renderable;
 
 namespace MemoryHistoryWpf
 {
@@ -48,11 +49,22 @@ namespace MemoryHistoryWpf
                 pi.FormPlot.Plot.YLabel("Memory (MB)");
                 pi.FormPlot.Plot.XLabel("Time (min)");
 
-                var sig = pi.FormPlot.Plot.AddSignal(pi.LiveData);
-                sig.FillBelow();
-                pi.SignalPlot = sig;
-                sig.MarkerSize = 0;
-                sig.MarkerShape = MarkerShape.filledCircle;
+                // Create another axis to the left and give it an index of 2
+                pi.FormPlot.Plot.YAxis2.Ticks(true);
+                pi.FormPlot.Plot.YAxis2.Label("Porcess Count");
+                var sigMem = pi.FormPlot.Plot.AddSignal(pi.Mem);
+                sigMem.YAxisIndex = 0;
+                sigMem.XAxisIndex = 0;
+
+                var sigPc = pi.FormPlot.Plot.AddSignal(pi.ProcessCount);
+                sigPc.YAxisIndex = 1;
+                sigPc.XAxisIndex = 0;
+
+                sigMem.FillBelow();
+                pi.SignalPlotMem = sigMem;
+                pi.SignalPlotPc = sigPc;
+                sigMem.MarkerSize = 0;
+                sigMem.MarkerShape = MarkerShape.filledCircle;
 
                 double[] xPositions = Enumerable.Range(0, 11).Select(e => e * 60.0 * pi.Time / 10).ToArray();
                 string[] xLabels = xPositions.Select(x => x / 60 + " m").Reverse().ToArray();
@@ -69,9 +81,11 @@ namespace MemoryHistoryWpf
 
         public int Time { get; set; }
 
-        public readonly double[] LiveData;
+        public readonly double[] Mem;
+        public readonly double[] ProcessCount;
 
-        public SignalPlot SignalPlot;
+        public SignalPlot SignalPlotMem;
+        public SignalPlot SignalPlotPc;
 
         public WpfPlot FormPlot;
 
@@ -84,7 +98,8 @@ namespace MemoryHistoryWpf
         {
             Name = processName;
             Time = time;
-            LiveData = new double[60 * time];
+            Mem = new double[60 * time];
+            ProcessCount = new double[60 * time];
             FormPlot = formPlot;
         }
 
@@ -96,6 +111,11 @@ namespace MemoryHistoryWpf
             {
                 if (!p.HasExited)
                 {
+                    if (Name == "msedge" && !p.MainModule.FileName.Contains("Dev"))
+                    {
+                        continue;
+                    }
+
                     p.Refresh();
                     var s = p.WorkingSet64 / 1024.0 / 1024.0;
                     total += s;
@@ -105,8 +125,10 @@ namespace MemoryHistoryWpf
             memoryUsed = Math.Round(total, 2);
 
             // "scroll" the whole chart to the left
-            Array.Copy(LiveData, 1, LiveData, 0, LiveData.Length - 1);
-            LiveData[LiveData.Length - 1] = memoryUsed;
+            Array.Copy(Mem, 1, Mem, 0, Mem.Length - 1);
+            Array.Copy(ProcessCount, 1, ProcessCount, 0, ProcessCount.Length - 1);
+            Mem[Mem.Length - 1] = memoryUsed;
+            ProcessCount[ProcessCount.Length - 1] = ps.Count();
 
             try
             {
