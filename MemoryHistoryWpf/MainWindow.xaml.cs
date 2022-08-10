@@ -52,6 +52,8 @@ namespace MemoryHistoryWpf
                 // Create another axis to the left and give it an index of 2
                 pi.FormPlot.Plot.YAxis2.Ticks(true);
                 pi.FormPlot.Plot.YAxis2.Label("Porcess Count");
+                pi.FormPlot.Plot.YAxis2.Grid(false);
+                pi.FormPlot.Plot.YAxis2.MinorGrid(false);
                 var sigMem = pi.FormPlot.Plot.AddSignal(pi.Mem);
                 sigMem.YAxisIndex = 0;
                 sigMem.XAxisIndex = 0;
