@@ -113,14 +113,29 @@ namespace MemoryHistoryWpf
             {
                 if (!p.HasExited)
                 {
-                    if (Name == "msedge" && !p.MainModule.FileName.Contains("Dev"))
+                    try
+                    {
+                        if (Name == "msedge" && !p.MainModule.FileName.Contains("Dev"))
+                        {
+                            continue;
+                        }
+                    }
+                    catch (Exception)
                     {
                         continue;
                     }
 
                     p.Refresh();
-                    var s = p.WorkingSet64 / 1024.0 / 1024.0;
-                    total += s;
+                    double s = 0.0;
+                    try
+                    {
+                        s = p.WorkingSet64 / 1024.0 / 1024.0;
+                        total += s;
+                    }
+                    catch (Exception)
+                    {
+
+                    }
                 }
             }
 
