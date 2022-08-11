@@ -144,8 +144,8 @@ namespace MemoryHistoryWpf
             // "scroll" the whole chart to the left
             Array.Copy(Mem, 1, Mem, 0, Mem.Length - 1);
             Array.Copy(ProcessCount, 1, ProcessCount, 0, ProcessCount.Length - 1);
-            Mem[Mem.Length - 1] = memoryUsed;
-            ProcessCount[ProcessCount.Length - 1] = ps.Count();
+            Mem[^1] = memoryUsed;
+            ProcessCount[^1] = ps.Length;
 
             try
             {
@@ -181,5 +181,4 @@ namespace MemoryHistoryWpf
             }
         }
     }
-
 }
