@@ -53,7 +53,7 @@ namespace MemoryHistoryWpf
                 pi.FormPlot.Plot.YAxis2.Ticks(true);
                 pi.FormPlot.Plot.YAxis2.Label("Porcess Count");
                 pi.FormPlot.Plot.YAxis2.Grid(false);
-                pi.FormPlot.Plot.YAxis2.MinorGrid(false);
+                pi.FormPlot.Plot.YAxis2.MinimumTickSpacing(1);
                 var sigMem = pi.FormPlot.Plot.AddSignal(pi.Mem);
                 sigMem.YAxisIndex = 0;
                 sigMem.XAxisIndex = 0;
