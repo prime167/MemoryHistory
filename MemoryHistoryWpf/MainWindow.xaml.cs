@@ -8,9 +8,8 @@ using System.Windows;
 using NLog;
 using ScottPlot;
 using ScottPlot.Plottable;
-using ScottPlot.Renderable;
 
-namespace MemoryHistoryWpf
+namespace MemHistoryWpf
 {
     public partial class MainWindow : Window
     {
