@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.31911.260
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InteractiveDataDisplay.WPF", "..\..\..\work\git\HostPc_C103M\appshell\src\InteractiveDataDisplay.WPF\InteractiveDataDisplay.WPF.csproj", "{2D34544C-2DF2-4B20-A43A-6C8D2DF3DD82}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemoryHistory", "MemoryHistory\MemoryHistory.csproj", "{145E3809-1357-4139-8D22-28D826A6E079}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemHistoryWinform", "MemHistoryWinform\MemHistoryWinform.csproj", "{E1332B82-38B3-4ED7-8915-A93CA3A59044}"
@@ -17,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2D34544C-2DF2-4B20-A43A-6C8D2DF3DD82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D34544C-2DF2-4B20-A43A-6C8D2DF3DD82}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D34544C-2DF2-4B20-A43A-6C8D2DF3DD82}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D34544C-2DF2-4B20-A43A-6C8D2DF3DD82}.Release|Any CPU.Build.0 = Release|Any CPU
 		{145E3809-1357-4139-8D22-28D826A6E079}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{145E3809-1357-4139-8D22-28D826A6E079}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{145E3809-1357-4139-8D22-28D826A6E079}.Release|Any CPU.ActiveCfg = Release|Any CPU
