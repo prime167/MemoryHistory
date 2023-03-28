@@ -21,14 +21,17 @@ public partial class MainWindow : Window
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
         var me = Assembly.GetEntryAssembly()?.GetName().Name;
-        var ps1 = new ProcessPlotInfo("msedge", 600, WpfPlot1);
-        var ps2 = new ProcessPlotInfo("msedge", 60, WpfPlot2, true);
+        var ps1 = new ProcessPlotInfo(me, 600, WpfPlot1);
+        var ps2 = new ProcessPlotInfo(me, 60, WpfPlot2);
 
-        var ps3 = new ProcessPlotInfo(me, 600, WpfPlot3);
-        var ps4 = new ProcessPlotInfo(me, 60, WpfPlot4);
+        var ps3 = new ProcessPlotInfo("msedge", 600, WpfPlot3);
+        var ps4 = new ProcessPlotInfo("msedge", 60, WpfPlot4, true);
 
         var ps5 = new ProcessPlotInfo("vivaldi", 600, WpfPlot5);
         var ps6 = new ProcessPlotInfo("vivaldi", 60, WpfPlot6);
+
+        var ps7 = new ProcessPlotInfo("chrome", 600, WpfPlot7);
+        var ps8 = new ProcessPlotInfo("chrome", 60, WpfPlot8);
 
         _processPlotInfos.Add(ps1);
         _processPlotInfos.Add(ps2);
@@ -36,6 +39,8 @@ public partial class MainWindow : Window
         _processPlotInfos.Add(ps4);
         _processPlotInfos.Add(ps5);
         _processPlotInfos.Add(ps6);
+        _processPlotInfos.Add(ps7);
+        _processPlotInfos.Add(ps8);
 
         foreach (ProcessPlotInfo pi in _processPlotInfos)
         {
@@ -69,7 +74,7 @@ public partial class MainWindow : Window
             double[] xPositions;
             string[] xLabels;
 
-            if (pi.Time <=60)
+            if (pi.Time <= 60)
             {
                 xPositions = Enumerable.Range(0, 11).Select(e => e * 60.0 * pi.Time / 10).ToArray();
                 xLabels = xPositions.Select(x => x / 60 + " m").Reverse().ToArray(); // s=> min

@@ -2,16 +2,16 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NLog" Version="5.0.*" />
-    <PackageReference Include="Samboy063.Tomlet" Version="5.0.*" />
+    <PackageReference Include="NLog" Version="5.1.*" />
+    <PackageReference Include="Samboy063.Tomlet" Version="5.1.*" />
     <PackageReference Include="ScottPlot.WPF" Version="4.1.*" />
-    <PackageReference Include="System.Management" Version="7.0.0" />
+    <PackageReference Include="System.Management" Version="8.0.0-preview.2.23128.3" />
   </ItemGroup>
 
 </Project>
