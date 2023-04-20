@@ -1,0 +1,56 @@
+﻿<Window x:Class="MemoryInfo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MemoryInfo"
+        mc:Ignorable="d" Loaded="MainWindow_OnLoaded"
+        xmlns:scottPlot="clr-namespace:ScottPlot;assembly=ScottPlot.WPF"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <scottPlot:WpfPlot Name="WpMemory" Grid.Row="0" Grid.Column="0"/>
+        <scottPlot:WpfPlot Name="WpPageFile" Grid.Row="0" Grid.Column="1"/>
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Content="内存占用 %" HorizontalAlignment="Center" FontSize="15" FontWeight="Bold" />
+
+            <Label Grid.Row="1" Grid.Column="0" Content="当前:" Margin="5"/>
+            <Label Grid.Row="1" Grid.Column="1" Content="" Name="LblCurrentPercentage" />
+
+            <Label Grid.Row="2" Grid.Column="0" Content="最小:" Margin="5"/>
+            <Label Grid.Row="2" Grid.Column="1" Content="" Name="LblMinPercentage" />
+
+            <Label Grid.Row="3" Grid.Column="0" Content="最大:" Margin="5"/>
+            <Label Grid.Row="3" Grid.Column="1" Content="" Name="LblMaxPercentage" />
+       
+            <Label Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Content="页面文件" HorizontalAlignment="Center" FontSize="15" FontWeight="Bold"/>
+            <Label Grid.Row="1" Grid.Column="2" Content="当前:" Margin="5"/>
+            <Label Grid.Row="1" Grid.Column="3" Content="" Name="LblCurrentSize" />
+
+            <Label Grid.Row="2" Grid.Column="2" Content="最小:" Margin="5"/>
+            <Label Grid.Row="2" Grid.Column="3" Content="" Name="LblMinSize" />
+
+            <Label Grid.Row="3" Grid.Column="2" Content="最大:" Margin="5"/>
+            <Label Grid.Row="3" Grid.Column="3" Content="" Name="LblMaxSize" />
+        </Grid>
+    </Grid>
+</Window>
