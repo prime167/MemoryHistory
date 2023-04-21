@@ -13,16 +13,16 @@ public partial class MainWindow : Window
     private SignalPlot _plot1;
     private SignalPlot _plot2;
 
-    private double _currentPercentage = 0; //%
-    private double _minPercentage = 100; //%
-    private double _maxPercentage = 0; //%
+    public MemoryViewModel Vm = new MemoryViewModel();
 
-    private double _currentSize = 0; //GB
-    private double _minSize = 100; //GB
-    private double _maxSize = 0; //GB
     public MainWindow()
     {
         InitializeComponent();
+        Vm.MinPercentage = 100;
+        Vm.MaxPercentage = 0;
+        Vm.MinSize = 100;
+        Vm.MaxSize = 0;
+        DataContext = Vm;
     }
 
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
@@ -69,24 +69,30 @@ public partial class MainWindow : Window
         var size = fi.Length / 1024.0 / 1024.0 / 1024.0;
         size = Math.Round(size, 3);
 
-        if (p < _minPercentage)
+        Vm.CurrentPercentage = p;
+        Vm.CurrentSize = size;
+        if (p < Vm.MinPercentage)
         {
-            _minPercentage = p;
+            Vm.MinPercentage = p;
+            Vm.MinPercentageTime = DateTime.Now.ToLongTimeString();
         }
 
-        if (p > _maxPercentage)
+        if (p > Vm.MaxPercentage)
         {
-            _maxPercentage = p;
+            Vm.MaxPercentage = p;
+            Vm.MaxPercentageTime = DateTime.Now.ToLongTimeString();
         }
 
-        if (size < _minSize)
+        if (size < Vm.MinSize)
         {
-            _minSize = size;
+            Vm.MinSize = size;
+            Vm.MinSizeTime = DateTime.Now.ToLongTimeString();
         }
 
-        if (size > _maxSize)
+        if (size > Vm.MaxSize)
         {
-            _maxSize = size;
+            Vm.MaxSize = size;
+            Vm.MaxSizeTime = DateTime.Now.ToLongTimeString();
         }
 
         // 左移曲线
@@ -106,14 +112,6 @@ public partial class MainWindow : Window
 
                 _plot2 = WpPageFile.Plot.AddSignal(FileSize.ToArray());
                 WpPageFile.Refresh();
-
-                LblCurrentPercentage.Content = $"{p} %";
-                LblMinPercentage.Content = $"{_minPercentage} %";
-                LblMaxPercentage.Content = $"{_maxPercentage} %";
-
-                LblCurrentSize.Content = $"{size} GB";
-                LblMinSize.Content = $"{_minSize} GB";
-                LblMaxSize.Content = $"{_maxSize} GB";
             });
         }
         catch (Exception e)

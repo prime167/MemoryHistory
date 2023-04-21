@@ -26,31 +26,45 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Content="内存占用 %" HorizontalAlignment="Center" FontSize="15" FontWeight="Bold" />
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="*"/>
 
-            <Label Grid.Row="1" Grid.Column="0" Content="当前:" Margin="5"/>
-            <Label Grid.Row="1" Grid.Column="1" Content="" Name="LblCurrentPercentage" />
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Content="内存占用 %" HorizontalAlignment="Center" FontSize="15" FontWeight="Bold" />
+
+            <Label Grid.Row="1" Grid.Column="0" Content="当前:" Margin="5" />
+            <Label Grid.Row="1" Grid.Column="1" Content="{Binding CurrentPercentage, FallbackValue=52}" Name="LblCurrentPercentage" HorizontalContentAlignment="Right" />
+            <Label Grid.Row="1" Grid.Column="2" Content="%" HorizontalContentAlignment="Left" />
 
             <Label Grid.Row="2" Grid.Column="0" Content="最小:" Margin="5"/>
-            <Label Grid.Row="2" Grid.Column="1" Content="" Name="LblMinPercentage" />
-
+            <Label Grid.Row="2" Grid.Column="1" Content="{Binding MinPercentage, FallbackValue=5}" Name="LblMinPercentage" HorizontalContentAlignment="Right" />
+            <Label Grid.Row="2" Grid.Column="2" Content="%"  HorizontalContentAlignment="Left"/>
+            <Label Grid.Row="2" Grid.Column="3" Content="{Binding MinPercentageTime, FallbackValue=20 Min ago}" Name="LblMinPercentageTime" HorizontalContentAlignment="Left"/>
             <Label Grid.Row="3" Grid.Column="0" Content="最大:" Margin="5"/>
-            <Label Grid.Row="3" Grid.Column="1" Content="" Name="LblMaxPercentage" />
-       
-            <Label Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Content="页面文件" HorizontalAlignment="Center" FontSize="15" FontWeight="Bold"/>
-            <Label Grid.Row="1" Grid.Column="2" Content="当前:" Margin="5"/>
-            <Label Grid.Row="1" Grid.Column="3" Content="" Name="LblCurrentSize" />
+            <Label Grid.Row="3" Grid.Column="1" Content="{Binding MaxPercentage, FallbackValue=79}" Name="LblMaxPercentage" HorizontalContentAlignment="Right"/>
+            <Label Grid.Row="3" Grid.Column="2" Content="%"  HorizontalContentAlignment="Left"/>
+            <Label Grid.Row="3" Grid.Column="3" Content="{Binding MaxPercentageTime, FallbackValue=2 Min ago}" Name="LblMaxPercentageTime" HorizontalContentAlignment="Left"/>
 
-            <Label Grid.Row="2" Grid.Column="2" Content="最小:" Margin="5"/>
-            <Label Grid.Row="2" Grid.Column="3" Content="" Name="LblMinSize" />
+            <Label Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="4" Content="页面文件" HorizontalAlignment="Center" FontSize="15" FontWeight="Bold"/>
+            <Label Grid.Row="1" Grid.Column="4" Content="当前:" Margin="5"/>
+            <Label Grid.Row="1" Grid.Column="5" Content="{Binding CurrentSize, FallbackValue=3.5}" Name="LblCurrentSize" HorizontalContentAlignment="Right"/>
+            <Label Grid.Row="1" Grid.Column="6" Content="GB"  HorizontalContentAlignment="Left"/>
 
-            <Label Grid.Row="3" Grid.Column="2" Content="最大:" Margin="5"/>
-            <Label Grid.Row="3" Grid.Column="3" Content="" Name="LblMaxSize" />
+            <Label Grid.Row="2" Grid.Column="4" Content="最小:" Margin="5"/>
+            <Label Grid.Row="2" Grid.Column="5" Content="{Binding MinSize, FallbackValue=1}" Name="LblMinSize" HorizontalContentAlignment="Right"/>
+            <Label Grid.Row="2" Grid.Column="6" Content="GB" HorizontalContentAlignment="Left"/>
+            <Label Grid.Row="2" Grid.Column="7" Content="{Binding MinSizeTime, FallbackValue=21 Min ago}" Name="LblMinSizeTime" HorizontalContentAlignment="Left"/>
+
+            <Label Grid.Row="3" Grid.Column="4" Content="最大:" Margin="5"/>
+            <Label Grid.Row="3" Grid.Column="5" Content="{Binding MaxSize, FallbackValue=4}" Name="LblMaxSize" HorizontalContentAlignment="Right"/>
+            <Label Grid.Row="3" Grid.Column="6" Content="GB" HorizontalContentAlignment="Left" />
+            <Label Grid.Row="3" Grid.Column="7" Content="{Binding MaxSizeTime, FallbackValue=45 Min ago}" Name="LblMaxSizeTime" HorizontalContentAlignment="Left"/>
         </Grid>
     </Grid>
 </Window>
