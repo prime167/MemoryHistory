@@ -1,19 +1,26 @@
-﻿using System.Management;
+﻿using System.Diagnostics;
+using System.Management;
 using System.Windows;
 using ScottPlot.Plottable;
 using System.IO;
 
 namespace MemoryInfo;
 
+// ReSharper disable once UnusedMember.Global
 public partial class MainWindow : Window
 {
-    private Timer updateMemoryTimer;
-    public readonly double[] Mem = new double[600];
-    public readonly double[] FileSize = new double[600];
-    private SignalPlot _plot1;
-    private SignalPlot _plot2;
+    // ReSharper disable once NotAccessedField.Local
+    private Timer _updateMemoryTimer;
+    public List<double> Times = new();
+    public List<double> Percentages = new();
+    public List<double> Sizes = new();
 
-    public MemoryViewModel Vm = new MemoryViewModel();
+    private ScatterPlotList<double> _plot1;
+    private ScatterPlotList<double> _plot2;
+    private int _count;
+    private const int MaxSeconds = 60 * 15;
+
+    public MemoryViewModel Vm = new();
 
     public MainWindow()
     {
@@ -28,10 +35,12 @@ public partial class MainWindow : Window
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
         ResetCharts();
-        _plot1 = WpMemory.Plot.AddSignal(Mem.ToArray());
-        _plot2 = WpMemory.Plot.AddSignal(FileSize.ToArray());
+        _plot1 = WpMemory.Plot.AddScatterList();
+        _plot2 = WpPageFile.Plot.AddScatterList();
 
-        updateMemoryTimer = new Timer(GetMemory, null, 0, 1000);
+        _plot1.MarkerSize = 1;
+        _plot2.MarkerSize = 1;
+        _updateMemoryTimer = new Timer(GetMemory, null, 0, 1000);
     }
 
     private void ResetCharts()
@@ -39,83 +48,105 @@ public partial class MainWindow : Window
         WpMemory.Plot.Clear();
 
         WpMemory.Configuration.DoubleClickBenchmark = false;
-        WpMemory.Plot.SetAxisLimits(0, 600, 0, 100);
-        //WpMemory.Plot.SetOuterViewLimits(0, 10000, -0.1, 300);
+        WpMemory.Plot.XAxis.SetBoundary(0, 10000);
+        WpMemory.Plot.YAxis.SetBoundary(0, 100);
         WpMemory.MouseDoubleClick += WpMemory_MouseDoubleClick;
         WpMemory.Plot.YLabel("Memory");
         WpMemory.Plot.XLabel("Time");
         WpMemory.Plot.Title("Memory usage");
         WpMemory.Refresh();
-        
+
         WpPageFile.Plot.Clear();
 
         WpPageFile.Configuration.DoubleClickBenchmark = false;
-        WpPageFile.Plot.SetAxisLimits(0, 600, 0, 8);
-        //WpPageFile.Plot.SetOuterViewLimits(0, 10000, -0.1, 300);
+        WpPageFile.Plot.XAxis.SetBoundary(0, 10000);
+        WpPageFile.Plot.YAxis.SetBoundary(0, 100);
         WpPageFile.MouseDoubleClick += WpPageFile_MouseDoubleClick;
-        WpPageFile.Plot.YLabel("pagefile size");
+        WpPageFile.Plot.YLabel("已提交");
         WpPageFile.Plot.XLabel("Time");
-        WpPageFile.Plot.Title("pagefile size");
+        WpPageFile.Plot.Title("虚拟内存");
         WpPageFile.Refresh();
     }
 
-    public void GetMemory(object? state)
+    public void GetMemory(object state)
     {
-        var p = GetMemoryUsage();
-        p = Math.Round(p, 2);
+        (double p1,double p2) = GetSystemMemoryUsagePercentage();
+        p1 = Math.Round(p1, 2);
 
-        var file = @"c:\pagefile.sys";
-        var fi = new FileInfo(file);
-        var size = fi.Length / 1024.0 / 1024.0 / 1024.0;
-        size = Math.Round(size, 3);
+        //const string file = @"c:\pagefile.sys";
+        //var fi = new FileInfo(file);
+        //double pp = fi.Length / 1024.0 / 1024.0 / 1024.0;
+        //size = Math.Round(size, 3);
+        var pp = Math.Round(p2, 2);
 
-        Vm.CurrentPercentage = p;
-        Vm.CurrentSize = size;
-        if (p < Vm.MinPercentage)
+        Times.Add(_count);
+        Percentages.Add(p1);
+        Sizes.Add(pp);
+
+        if (Times.Count > MaxSeconds)
         {
-            Vm.MinPercentage = p;
-            Vm.MinPercentageTime = DateTime.Now.ToLongTimeString();
+            Times.RemoveAt(0);
+            Percentages.RemoveAt(0);
+            Sizes.RemoveAt(0);
         }
 
-        if (p > Vm.MaxPercentage)
+        Vm.CurrentPercentage = p1;
+
+        if (Math.Abs(pp - Vm.CurrentSize) > 0.1)
         {
-            Vm.MaxPercentage = p;
-            Vm.MaxPercentageTime = DateTime.Now.ToLongTimeString();
+            Vm.CurrentSize = pp;
+            Vm.CurrentSizeTime = DateTime.Now;
         }
 
-        if (size < Vm.MinSize)
+        if (p1 < Vm.MinPercentage)
         {
-            Vm.MinSize = size;
-            Vm.MinSizeTime = DateTime.Now.ToLongTimeString();
+            Vm.MinPercentage = p1;
+            Vm.MinPercentageTime = DateTime.Now;
         }
 
-        if (size > Vm.MaxSize)
+        if (p1 > Vm.MaxPercentage)
         {
-            Vm.MaxSize = size;
-            Vm.MaxSizeTime = DateTime.Now.ToLongTimeString();
+            Vm.MaxPercentage = p1;
+            Vm.MaxPercentageTime = DateTime.Now;
         }
 
-        // 左移曲线
-        Array.Copy(Mem, 1, Mem, 0, Mem.Length - 1);
-        Mem[^1] = p;
+        if (pp < Vm.MinSize)
+        {
+            Vm.MinSize = pp;
+            Vm.MinSizeTime = DateTime.Now;
+        }
 
-        Array.Copy(FileSize, 1, FileSize, 0, FileSize.Length - 1);
-        FileSize[^1] = size;
+        if (pp > Vm.MaxSize)
+        {
+            Vm.MaxSize = pp;
+            Vm.MaxSizeTime = DateTime.Now;
+        }
+
+        Vm.MaxPercentageTimeStr = Utils.GetRelativeTime(Vm.MaxPercentageTime);
+        Vm.MinPercentageTimeStr = Utils.GetRelativeTime(Vm.MinPercentageTime);
+        Vm.CurrentSizeTimeStr = Utils.GetRelativeTime(Vm.CurrentSizeTime);
+        Vm.MaxSizeTimeStr = Utils.GetRelativeTime(Vm.MaxSizeTime);
+        Vm.MinSizeTimeStr = Utils.GetRelativeTime(Vm.MinSizeTime);
 
         try
         {
-            this.Dispatcher.Invoke(() =>
+            Dispatcher.Invoke(() =>
             {
-                ResetCharts();
-                _plot1 = WpMemory.Plot.AddSignal(Mem.ToArray());
+                _plot1.Clear();
+                _plot1.AddRange(Times.ToArray(), Percentages.ToArray());
                 WpMemory.Refresh();
+                WpMemory.Plot.AxisAuto();
 
-                _plot2 = WpPageFile.Plot.AddSignal(FileSize.ToArray());
+                _plot2.Clear();
+                _plot2.AddRange(Times.ToArray(), Sizes.ToArray());
                 WpPageFile.Refresh();
+                WpPageFile.Plot.AxisAuto();
+                _count++;
             });
         }
         catch (Exception e)
         {
+            Debug.WriteLine(e.Message);
         }
     }
 
@@ -129,22 +160,28 @@ public partial class MainWindow : Window
         WpPageFile.Plot.AxisAuto();
     }
 
-    private double GetMemoryUsage()
+    public (double percentageUsed, double percentageCommitted) GetSystemMemoryUsagePercentage()
     {
+        var toGb = 1024.0 * 1024.0;
         var wmiObject = new ManagementObjectSearcher("select * from Win32_OperatingSystem");
-
         var memoryValues = wmiObject.Get().Cast<ManagementObject>().Select(mo => new
         {
-            FreePhysicalMemory = Double.Parse(mo["FreePhysicalMemory"].ToString()),
-            TotalVisibleMemorySize = Double.Parse(mo["TotalVisibleMemorySize"].ToString())
+            FreePhysicalMemory = Math.Round(double.Parse(mo["FreePhysicalMemory"].ToString()) / toGb,2),
+            TotalVisibleMemorySize = Math.Round(double.Parse(mo["TotalVisibleMemorySize"].ToString()) / toGb, 2),
+            FreeSpaceInPagingFiles = Math.Round(double.Parse(mo["FreeSpaceInPagingFiles"].ToString()) / toGb, 2),
+            TotalVirtualMemorySize = Math.Round(double.Parse(mo["TotalVirtualMemorySize"].ToString()) / toGb, 2),
+            FreeVirtualMemory = Math.Round(double.Parse(mo["FreeVirtualMemory"].ToString()) / toGb, 2),
         }).FirstOrDefault();
 
         if (memoryValues != null)
         {
-            var percent = ((memoryValues.TotalVisibleMemorySize - memoryValues.FreePhysicalMemory) / memoryValues.TotalVisibleMemorySize) * 100;
-            return percent;
+            var percentageUsed = ((memoryValues.TotalVisibleMemorySize - memoryValues.FreePhysicalMemory) / memoryValues.TotalVisibleMemorySize) * 100;
+            var tc = memoryValues.TotalVirtualMemorySize - memoryValues.FreeVirtualMemory;
+            //Console.WriteLine($"Total committed: {Math.Round(tc, 1)} GB");
+            var percentageCommitted = (tc / memoryValues.TotalVirtualMemorySize) * 100;
+            return (percentageUsed, percentageCommitted);
         }
 
-        return 0;
+        return (0, 0);
     }
 }
