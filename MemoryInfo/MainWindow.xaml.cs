@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Management;
 using System.Windows;
+using System.Xml;
 using ScottPlot.Plottable;
 
 namespace MemoryInfo;
@@ -45,7 +47,7 @@ public partial class MainWindow : Window
     {
         ResetCharts();
         _plot1 = WpMemory.Plot.AddScatterList();
-        _plot2 = WpPageFile.Plot.AddScatterList();
+        _plot2 = WpCommit.Plot.AddScatterList();
 
         _plot1.MarkerSize = 1;
         _plot2.MarkerSize = 1;
@@ -58,23 +60,25 @@ public partial class MainWindow : Window
 
         WpMemory.Configuration.DoubleClickBenchmark = false;
         WpMemory.Plot.XAxis.SetBoundary(0, MaxSeconds);
+        WpMemory.Plot.XAxis.MinimumTickSpacing(1);
         WpMemory.Plot.YAxis.SetBoundary(0, 100);
+        WpMemory.Plot.Grid();
         WpMemory.MouseDoubleClick += WpMemory_MouseDoubleClick;
         WpMemory.Plot.YLabel("Memory");
         WpMemory.Plot.XLabel("Time");
         WpMemory.Plot.Title("Memory usage");
         WpMemory.Refresh();
 
-        WpPageFile.Plot.Clear();
-
-        WpPageFile.Configuration.DoubleClickBenchmark = false;
-        WpPageFile.Plot.XAxis.SetBoundary(0, MaxSeconds);
-        WpPageFile.Plot.YAxis.SetBoundary(0, 100);
-        WpPageFile.MouseDoubleClick += WpPageFile_MouseDoubleClick;
-        WpPageFile.Plot.YLabel("已提交");
-        WpPageFile.Plot.XLabel("Time");
-        WpPageFile.Plot.Title("虚拟内存");
-        WpPageFile.Refresh();
+        WpCommit.Plot.Clear();
+        WpCommit.Configuration.DoubleClickBenchmark = false;
+        WpCommit.Plot.XAxis.SetBoundary(0, MaxSeconds);
+        WpCommit.Plot.XAxis.MinimumTickSpacing(1);
+        WpCommit.Plot.YAxis.SetBoundary(0, 100);
+        WpCommit.MouseDoubleClick += WpPageFile_MouseDoubleClick;
+        WpCommit.Plot.YLabel("已提交");
+        WpCommit.Plot.XLabel("Time");
+        WpCommit.Plot.Title("虚拟内存");
+        WpCommit.Refresh();
     }
 
     public void GetMemory(object state)
@@ -149,8 +153,8 @@ public partial class MainWindow : Window
 
                 _plot2.Clear();
                 _plot2.AddRange(Times.ToArray(), Commits.ToArray());
-                WpPageFile.Refresh();
-                WpPageFile.Plot.AxisAuto();
+                WpCommit.Refresh();
+                WpCommit.Plot.AxisAuto();
                 _count++;
             });
         }
@@ -167,7 +171,7 @@ public partial class MainWindow : Window
 
     private void WpPageFile_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
-        WpPageFile.Plot.AxisAuto();
+        WpCommit.Plot.AxisAuto();
     }
 
     public (double percentageUsed, double percentageCommitted) GetSystemMemoryUsagePercentage()
