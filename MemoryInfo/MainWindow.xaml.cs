@@ -1,8 +1,6 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Management;
 using System.Windows;
-using System.Xml;
 using ScottPlot.Plottable;
 
 namespace MemoryInfo;
