@@ -62,9 +62,9 @@ public partial class MainWindow : Window
         WpMemory.Plot.YAxis.SetBoundary(0, 100);
         WpMemory.Plot.Grid();
         WpMemory.MouseDoubleClick += WpMemory_MouseDoubleClick;
-        WpMemory.Plot.YLabel("Memory (%)");
-        WpMemory.Plot.XLabel("Time (s)");
-        WpMemory.Plot.Title("Memory usage");
+        WpMemory.Plot.YLabel("使用中 (%)");
+        WpMemory.Plot.XLabel("时间 (s)");
+        WpMemory.Plot.Title("内存使用 %");
         WpMemory.Refresh();
 
         WpCommit.Plot.Clear();
@@ -74,8 +74,8 @@ public partial class MainWindow : Window
         WpCommit.Plot.YAxis.SetBoundary(0, 100);
         WpCommit.MouseDoubleClick += WpPageFile_MouseDoubleClick;
         WpCommit.Plot.YLabel("已提交 (%)");
-        WpCommit.Plot.XLabel("Time (s)");
-        WpCommit.Plot.Title("虚拟内存");
+        WpCommit.Plot.XLabel("时间 (s)");
+        WpCommit.Plot.Title("虚拟内存 %");
         WpCommit.Refresh();
     }
 
