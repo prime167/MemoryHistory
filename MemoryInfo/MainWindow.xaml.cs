@@ -64,8 +64,8 @@ public partial class MainWindow : Window
         WpMemory.Plot.YAxis.SetBoundary(0, 100);
         WpMemory.Plot.Grid();
         WpMemory.MouseDoubleClick += WpMemory_MouseDoubleClick;
-        WpMemory.Plot.YLabel("Memory");
-        WpMemory.Plot.XLabel("Time");
+        WpMemory.Plot.YLabel("Memory (%)");
+        WpMemory.Plot.XLabel("Time (s)");
         WpMemory.Plot.Title("Memory usage");
         WpMemory.Refresh();
 
@@ -75,8 +75,8 @@ public partial class MainWindow : Window
         WpCommit.Plot.XAxis.MinimumTickSpacing(1);
         WpCommit.Plot.YAxis.SetBoundary(0, 100);
         WpCommit.MouseDoubleClick += WpPageFile_MouseDoubleClick;
-        WpCommit.Plot.YLabel("已提交");
-        WpCommit.Plot.XLabel("Time");
+        WpCommit.Plot.YLabel("已提交 (%)");
+        WpCommit.Plot.XLabel("Time (s)");
         WpCommit.Plot.Title("虚拟内存");
         WpCommit.Refresh();
     }
@@ -85,11 +85,11 @@ public partial class MainWindow : Window
     {
         (double p1, double p2) = GetSystemMemoryUsagePercentage();
         p1 = Math.Round(p1, 2);
-        var pp = Math.Round(p2, 2);
+        p2 = Math.Round(p2, 2);
 
         Times.Add(_count);
         Percentages.Add(p1);
-        Commits.Add(pp);
+        Commits.Add(p2);
 
         if (Times.Count > MaxPeriod)
         {
@@ -100,10 +100,9 @@ public partial class MainWindow : Window
 
         Vm.CurrentPercentage = p1;
 
-        if (Math.Abs(pp - Vm.CurrentCommit) > 0.001)
+        if (Math.Abs(p2 - Vm.CurrentCommit) > 0.001)
         {
-            Vm.CurrentCommit = pp;
-            Vm.CurrentCommitTime = DateTime.Now;
+            Vm.CurrentCommit = p2;
         }
 
         if (p1 < Vm.MinPercentage)
@@ -118,21 +117,20 @@ public partial class MainWindow : Window
             Vm.MaxPercentageTime = DateTime.Now;
         }
 
-        if (pp < Vm.MinCommit)
+        if (p2 < Vm.MinCommit)
         {
-            Vm.MinCommit = pp;
+            Vm.MinCommit = p2;
             Vm.MinCommitTime = DateTime.Now;
         }
 
-        if (pp > Vm.MaxCommit)
+        if (p2 > Vm.MaxCommit)
         {
-            Vm.MaxCommit = pp;
+            Vm.MaxCommit = p2;
             Vm.MaxCommitTime = DateTime.Now;
         }
 
         Vm.MaxPercentageTimeStr = Utils.GetRelativeTime(Vm.MaxPercentageTime);
         Vm.MinPercentageTimeStr = Utils.GetRelativeTime(Vm.MinPercentageTime);
-        Vm.CurrentCommitTimeStr = Utils.GetRelativeTime(Vm.CurrentCommitTime);
         Vm.MaxCommitTimeStr = Utils.GetRelativeTime(Vm.MaxCommitTime);
         Vm.MinCommitTimeStr = Utils.GetRelativeTime(Vm.MinCommitTime);
 
@@ -140,9 +138,9 @@ public partial class MainWindow : Window
         {
             Dispatcher.Invoke(() =>
             {
-                if (Math.Abs(_ppTitle - pp) >= 0.5)
+                if (Math.Abs(_ppTitle - p2) >= 0.5)
                 {
-                    _ppTitle = pp;
+                    _ppTitle = p2;
                     Title = Math.Round(_ppTitle, 1) + "%";
                 }
 
