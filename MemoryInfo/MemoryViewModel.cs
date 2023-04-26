@@ -14,13 +14,13 @@ public partial class MemoryViewModel:ObservableObject
     private double? _maxPercentage;
 
     [ObservableProperty]
-    private double _currentSize;
+    private double _currentCommit;
 
     [ObservableProperty]
-    private double? _minSize;
+    private double? _minCommit;
 
     [ObservableProperty]
-    private double? _maxSize;
+    private double? _maxCommit;
 
     [ObservableProperty]
     private DateTime _minPercentageTime;
@@ -29,16 +29,16 @@ public partial class MemoryViewModel:ObservableObject
     private DateTime _maxPercentageTime;
 
     [ObservableProperty]
-    private DateTime _currentSizeTime;
+    private DateTime _currentCommitTime;
 
     [ObservableProperty]
-    private DateTime _minSizeTime;
+    private DateTime _minCommitTime;
 
     [ObservableProperty]
-    private DateTime _maxSizeTime;
+    private DateTime _maxCommitTime;
 
     [ObservableProperty]
-    private string? _currentSizeTimeStr;
+    private string? _currentCommitTimeStr;
 
     [ObservableProperty]
     private string? _minPercentageTimeStr;
@@ -47,8 +47,8 @@ public partial class MemoryViewModel:ObservableObject
     private string? _maxPercentageTimeStr;
 
     [ObservableProperty]
-    private string? _minSizeTimeStr;
+    private string? _minCommitTimeStr;
 
     [ObservableProperty]
-    private string? _maxSizeTimeStr;
+    private string? _maxCommitTimeStr;
 }

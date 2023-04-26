@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MemoryInfo"
+        xmlns:local="clr-namespace:MemoryInfo" WindowStyle="ToolWindow"
         mc:Ignorable="d" Loaded="MainWindow_OnLoaded"
         xmlns:scottPlot="clr-namespace:ScottPlot;assembly=ScottPlot.WPF"
         Title="MainWindow" Height="450" Width="1100">
@@ -62,18 +62,18 @@
 
             <Label Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="4" Content="虚拟内存占用" HorizontalAlignment="Center" FontSize="15" FontWeight="Bold"/>
             <Label Grid.Row="1" Grid.Column="6" Content="当前:" />
-            <Label Grid.Row="1" Grid.Column="7" Content="{Binding CurrentSize, FallbackValue=3.599}" HorizontalContentAlignment="Right"/>
+            <Label Grid.Row="1" Grid.Column="7" Content="{Binding CurrentCommit, FallbackValue=3.599}" HorizontalContentAlignment="Right"/>
             <Label Grid.Row="1" Grid.Column="8" Content="%"  HorizontalContentAlignment="Left"/>
-            <Label Grid.Row="1" Grid.Column="9" Content="{Binding CurrentSizeTimeStr, FallbackValue=21 Min ago}" HorizontalContentAlignment="Left"/>
+            <Label Grid.Row="1" Grid.Column="9" Content="{Binding CurrentCommitTimeStr, FallbackValue=21 Min ago}" HorizontalContentAlignment="Left"/>
             <Label Grid.Row="2" Grid.Column="6" Content="最小:" />
-            <Label Grid.Row="2" Grid.Column="7" Content="{Binding MinSize, FallbackValue=1}" HorizontalContentAlignment="Right"/>
+            <Label Grid.Row="2" Grid.Column="7" Content="{Binding MinCommit, FallbackValue=1}" HorizontalContentAlignment="Right"/>
             <Label Grid.Row="2" Grid.Column="8" Content="%" HorizontalContentAlignment="Left"/>
-            <Label Grid.Row="2" Grid.Column="9" Content="{Binding MinSizeTimeStr, FallbackValue=21 Min ago}" HorizontalContentAlignment="Left"/>
+            <Label Grid.Row="2" Grid.Column="9" Content="{Binding MinCommitTimeStr, FallbackValue=21 Min ago}" HorizontalContentAlignment="Left"/>
 
             <Label Grid.Row="3" Grid.Column="6" Content="最大:" />
-            <Label Grid.Row="3" Grid.Column="7" Content="{Binding MaxSize, FallbackValue=4}" HorizontalContentAlignment="Right"/>
+            <Label Grid.Row="3" Grid.Column="7" Content="{Binding MaxCommit, FallbackValue=4}" HorizontalContentAlignment="Right"/>
             <Label Grid.Row="3" Grid.Column="8" Content="%" HorizontalContentAlignment="Left" />
-            <Label Grid.Row="3" Grid.Column="9" Content="{Binding MaxSizeTimeStr, FallbackValue=45 Min ago}" HorizontalContentAlignment="Left"/>
+            <Label Grid.Row="3" Grid.Column="9" Content="{Binding MaxCommitTimeStr, FallbackValue=45 Min ago}" HorizontalContentAlignment="Left"/>
         </Grid>
     </Grid>
 </Window>

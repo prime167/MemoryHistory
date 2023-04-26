@@ -2,7 +2,6 @@
 using System.Management;
 using System.Windows;
 using ScottPlot.Plottable;
-using System.IO;
 
 namespace MemoryInfo;
 
@@ -13,12 +12,22 @@ public partial class MainWindow : Window
     private Timer _updateMemoryTimer;
     public List<double> Times = new();
     public List<double> Percentages = new();
-    public List<double> Sizes = new();
+    public List<double> Commits = new();
 
     private ScatterPlotList<double> _plot1;
     private ScatterPlotList<double> _plot2;
     private int _count;
-    private const int MaxSeconds = 60 * 15;
+    private double _ppTitle = 0.0;
+
+    /// <summary>
+    /// X轴最大值
+    /// </summary>
+    private const int MaxSeconds = 60 * 60 * 24 * 365;
+
+    /// <summary>
+    /// 显示的时间范围
+    /// </summary>
+    private const int MaxPeriod = 60 * 30;
 
     public MemoryViewModel Vm = new();
 
@@ -27,8 +36,8 @@ public partial class MainWindow : Window
         InitializeComponent();
         Vm.MinPercentage = 100;
         Vm.MaxPercentage = 0;
-        Vm.MinSize = 100;
-        Vm.MaxSize = 0;
+        Vm.MinCommit = 100;
+        Vm.MaxCommit = 0;
         DataContext = Vm;
     }
 
@@ -48,7 +57,7 @@ public partial class MainWindow : Window
         WpMemory.Plot.Clear();
 
         WpMemory.Configuration.DoubleClickBenchmark = false;
-        WpMemory.Plot.XAxis.SetBoundary(0, 10000);
+        WpMemory.Plot.XAxis.SetBoundary(0, MaxSeconds);
         WpMemory.Plot.YAxis.SetBoundary(0, 100);
         WpMemory.MouseDoubleClick += WpMemory_MouseDoubleClick;
         WpMemory.Plot.YLabel("Memory");
@@ -59,7 +68,7 @@ public partial class MainWindow : Window
         WpPageFile.Plot.Clear();
 
         WpPageFile.Configuration.DoubleClickBenchmark = false;
-        WpPageFile.Plot.XAxis.SetBoundary(0, 10000);
+        WpPageFile.Plot.XAxis.SetBoundary(0, MaxSeconds);
         WpPageFile.Plot.YAxis.SetBoundary(0, 100);
         WpPageFile.MouseDoubleClick += WpPageFile_MouseDoubleClick;
         WpPageFile.Plot.YLabel("已提交");
@@ -70,32 +79,27 @@ public partial class MainWindow : Window
 
     public void GetMemory(object state)
     {
-        (double p1,double p2) = GetSystemMemoryUsagePercentage();
+        (double p1, double p2) = GetSystemMemoryUsagePercentage();
         p1 = Math.Round(p1, 2);
-
-        //const string file = @"c:\pagefile.sys";
-        //var fi = new FileInfo(file);
-        //double pp = fi.Length / 1024.0 / 1024.0 / 1024.0;
-        //size = Math.Round(size, 3);
         var pp = Math.Round(p2, 2);
 
         Times.Add(_count);
         Percentages.Add(p1);
-        Sizes.Add(pp);
+        Commits.Add(pp);
 
-        if (Times.Count > MaxSeconds)
+        if (Times.Count > MaxPeriod)
         {
             Times.RemoveAt(0);
             Percentages.RemoveAt(0);
-            Sizes.RemoveAt(0);
+            Commits.RemoveAt(0);
         }
 
         Vm.CurrentPercentage = p1;
 
-        if (Math.Abs(pp - Vm.CurrentSize) > 0.1)
+        if (Math.Abs(pp - Vm.CurrentCommit) > 0.001)
         {
-            Vm.CurrentSize = pp;
-            Vm.CurrentSizeTime = DateTime.Now;
+            Vm.CurrentCommit = pp;
+            Vm.CurrentCommitTime = DateTime.Now;
         }
 
         if (p1 < Vm.MinPercentage)
@@ -110,35 +114,41 @@ public partial class MainWindow : Window
             Vm.MaxPercentageTime = DateTime.Now;
         }
 
-        if (pp < Vm.MinSize)
+        if (pp < Vm.MinCommit)
         {
-            Vm.MinSize = pp;
-            Vm.MinSizeTime = DateTime.Now;
+            Vm.MinCommit = pp;
+            Vm.MinCommitTime = DateTime.Now;
         }
 
-        if (pp > Vm.MaxSize)
+        if (pp > Vm.MaxCommit)
         {
-            Vm.MaxSize = pp;
-            Vm.MaxSizeTime = DateTime.Now;
+            Vm.MaxCommit = pp;
+            Vm.MaxCommitTime = DateTime.Now;
         }
 
         Vm.MaxPercentageTimeStr = Utils.GetRelativeTime(Vm.MaxPercentageTime);
         Vm.MinPercentageTimeStr = Utils.GetRelativeTime(Vm.MinPercentageTime);
-        Vm.CurrentSizeTimeStr = Utils.GetRelativeTime(Vm.CurrentSizeTime);
-        Vm.MaxSizeTimeStr = Utils.GetRelativeTime(Vm.MaxSizeTime);
-        Vm.MinSizeTimeStr = Utils.GetRelativeTime(Vm.MinSizeTime);
+        Vm.CurrentCommitTimeStr = Utils.GetRelativeTime(Vm.CurrentCommitTime);
+        Vm.MaxCommitTimeStr = Utils.GetRelativeTime(Vm.MaxCommitTime);
+        Vm.MinCommitTimeStr = Utils.GetRelativeTime(Vm.MinCommitTime);
 
         try
         {
             Dispatcher.Invoke(() =>
             {
+                if (Math.Abs(_ppTitle - pp) >= 0.5)
+                {
+                    _ppTitle = pp;
+                    Title = Math.Round(_ppTitle, 1) + "%";
+                }
+
                 _plot1.Clear();
                 _plot1.AddRange(Times.ToArray(), Percentages.ToArray());
                 WpMemory.Refresh();
                 WpMemory.Plot.AxisAuto();
 
                 _plot2.Clear();
-                _plot2.AddRange(Times.ToArray(), Sizes.ToArray());
+                _plot2.AddRange(Times.ToArray(), Commits.ToArray());
                 WpPageFile.Refresh();
                 WpPageFile.Plot.AxisAuto();
                 _count++;
@@ -166,7 +176,7 @@ public partial class MainWindow : Window
         var wmiObject = new ManagementObjectSearcher("select * from Win32_OperatingSystem");
         var memoryValues = wmiObject.Get().Cast<ManagementObject>().Select(mo => new
         {
-            FreePhysicalMemory = Math.Round(double.Parse(mo["FreePhysicalMemory"].ToString()) / toGb,2),
+            FreePhysicalMemory = Math.Round(double.Parse(mo["FreePhysicalMemory"].ToString()) / toGb, 2),
             TotalVisibleMemorySize = Math.Round(double.Parse(mo["TotalVisibleMemorySize"].ToString()) / toGb, 2),
             FreeSpaceInPagingFiles = Math.Round(double.Parse(mo["FreeSpaceInPagingFiles"].ToString()) / toGb, 2),
             TotalVirtualMemorySize = Math.Round(double.Parse(mo["TotalVirtualMemorySize"].ToString()) / toGb, 2),
