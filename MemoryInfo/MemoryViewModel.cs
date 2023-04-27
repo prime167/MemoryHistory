@@ -5,13 +5,13 @@ namespace MemoryInfo;
 public partial class MemoryViewModel:ObservableObject
 {
     [ObservableProperty] 
-    private double? _currentPercentage;
+    private double _currentPercentage;
 
     [ObservableProperty]
-    private double? _minPercentage;
+    private double _minPercentage;
 
     [ObservableProperty]
-    private double? _maxPercentage;
+    private double _maxPercentage;
 
     [ObservableProperty]
     private DateTime _minPercentageTime;
@@ -20,19 +20,19 @@ public partial class MemoryViewModel:ObservableObject
     private DateTime _maxPercentageTime;
 
     [ObservableProperty]
-    private string? _minPercentageTimeStr;
+    private string _minPercentageTimeStr;
 
     [ObservableProperty]
-    private string? _maxPercentageTimeStr;
+    private string _maxPercentageTimeStr;
 
     [ObservableProperty]
     private double _currentCommit;
 
     [ObservableProperty]
-    private double? _minCommit;
+    private double _minCommit;
 
     [ObservableProperty]
-    private double? _maxCommit;
+    private double _maxCommit;
 
     [ObservableProperty]
     private DateTime _minCommitTime;
@@ -41,8 +41,8 @@ public partial class MemoryViewModel:ObservableObject
     private DateTime _maxCommitTime;
 
     [ObservableProperty]
-    private string? _minCommitTimeStr;
+    private string _minCommitTimeStr;
 
     [ObservableProperty]
-    private string? _maxCommitTimeStr;
+    private string _maxCommitTimeStr;
 }

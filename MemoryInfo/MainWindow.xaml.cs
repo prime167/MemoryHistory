@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
+using System.Drawing;
 using System.Management;
 using System.Windows;
+using ScottPlot;
 using ScottPlot.Plottable;
 
 namespace MemoryInfo;
@@ -10,12 +12,18 @@ public partial class MainWindow : Window
 {
     // ReSharper disable once NotAccessedField.Local
     private Timer _updateMemoryTimer;
+    private const int k = 30;// sample Count;
     public List<double> Times = new();
     public List<double> Percentages = new();
     public List<double> Commits = new();
+    public List<double> CommitsAvg = new();
+    public List<double> CommitsSma= new();
+    private SimpleMovingAverage _sma;
 
     private ScatterPlotList<double> _plot1;
     private ScatterPlotList<double> _plot2;
+    private ScatterPlotList<double> _plot3;
+    private ScatterPlotList<double> _plot4;
     private int _count;
     private double _ppTitle = 0.0;
 
@@ -43,12 +51,20 @@ public partial class MainWindow : Window
 
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
+        _sma = new SimpleMovingAverage(k);
         ResetCharts();
         _plot1 = WpMemory.Plot.AddScatterList();
-        _plot2 = WpCommit.Plot.AddScatterList();
+
+        var plt = WpCommit.Plot;
+        _plot2 = plt.AddScatterList(label:"now",color:Color.Green);
+        _plot3 = plt.AddScatterList(label:"avg",color:Color.Blue);
+        _plot4 = plt.AddScatterList(label:"sma", color:Color.Orange);
+        plt.Legend(location:Alignment.UpperLeft);
 
         _plot1.MarkerSize = 1;
         _plot2.MarkerSize = 1;
+        _plot3.MarkerSize = 1;
+        _plot4.MarkerSize = 1;
         _updateMemoryTimer = new Timer(GetMemory, null, 0, 1000);
     }
 
@@ -88,12 +104,17 @@ public partial class MainWindow : Window
         Times.Add(_count);
         Percentages.Add(p1);
         Commits.Add(p2);
+        CommitsAvg.Add(Math.Round(Commits.Average(),3));
+        var v = _sma.Update(p2);
+        CommitsSma.Add(v);
 
         if (Times.Count > MaxPeriod)
         {
             Times.RemoveAt(0);
             Percentages.RemoveAt(0);
             Commits.RemoveAt(0);
+            CommitsAvg.RemoveAt(0);
+            CommitsSma.RemoveAt(0);
         }
 
         Vm.CurrentPercentage = p1;
@@ -149,8 +170,16 @@ public partial class MainWindow : Window
 
                 _plot2.Clear();
                 _plot2.AddRange(Times.ToArray(), Commits.ToArray());
+
+                _plot3.Clear();
+                _plot3.AddRange(Times.ToArray(), CommitsAvg.ToArray());
+
+                _plot4.Clear();
+                _plot4.AddRange(Times.ToArray(), CommitsSma.ToArray());
+
                 WpCommit.Refresh();
                 WpCommit.Plot.AxisAuto();
+
                 _count++;
             });
         }
