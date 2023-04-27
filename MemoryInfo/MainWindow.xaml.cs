@@ -19,7 +19,7 @@ public partial class MainWindow : Window
     private const int MaxPeriod = 60 * 10;//60 * 30;
 
     private static object _locker = new object();
-    private const int k = 30;// sample Count;
+    private const int k = 30;// 移动平均最近点数;
     public List<double> Times = new();
 
     public double[] Percentages = new double[MaxPeriod];
