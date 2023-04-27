@@ -7,16 +7,12 @@ using ScottPlot.Plottable;
 
 namespace MemoryInfo;
 
-// ReSharper disable once UnusedMember.Global
 public partial class MainWindow : Window
 {
-    // ReSharper disable once NotAccessedField.Local
-    private Timer _updateMemoryTimer;
-
     /// <summary>
     /// 显示的时间范围
     /// </summary>
-    private const int MaxPeriod = 60 * 10;//60 * 30;
+    private const int MaxPeriod = 60 * 10;
 
     private static object _locker = new object();
     private const int k = 30;// 移动平均最近点数;
@@ -34,11 +30,6 @@ public partial class MainWindow : Window
     private SignalPlot _plotAvg;
     private SignalPlot _plotEma;// ema
     private double _ppTitle = 0.0;
-
-    /// <summary>
-    /// X轴最大值
-    /// </summary>
-    private const int MaxSeconds = 60 * 60 * 24 * 365;
 
     public MemoryViewModel Vm = new();
     private Plot _plt1;
@@ -72,7 +63,6 @@ public partial class MainWindow : Window
         _plotCurrentCommit.MarkerSize = 1;
         _plotAvg.MarkerSize = 1;
         _plotEma.MarkerSize = 1;
-        _updateMemoryTimer = new Timer(GetMemory, null, 0, 1000);
 
         static string customTickFormatter(double position)
         {
@@ -81,6 +71,8 @@ public partial class MainWindow : Window
 
         _plt1.XAxis.TickLabelFormat(customTickFormatter);
         _plt2.XAxis.TickLabelFormat(customTickFormatter);
+
+        var _ = new Timer(GetMemory, null, 0, 1000);
     }
 
     private void ResetCharts()
@@ -90,7 +82,6 @@ public partial class MainWindow : Window
         WpUsed.Configuration.DoubleClickBenchmark = false;
         WpUsed.MouseDoubleClick += WpUsed_MouseDoubleClick;
 
-        WpUsed.Plot.XAxis.SetBoundary(0, MaxSeconds);
         _plt1.XAxis.MinimumTickSpacing(1);
         _plt1.YAxis.SetBoundary(0, 100);
         _plt1.Grid();
@@ -102,7 +93,6 @@ public partial class MainWindow : Window
         _plt2.Clear();
         WpCommit.Configuration.DoubleClickBenchmark = false;
         WpCommit.MouseDoubleClick += WpCommit_MouseDoubleClick;
-        _plt2.XAxis.SetBoundary(0, MaxSeconds);
         _plt2.XAxis.MinimumTickSpacing(1);
         _plt2.YAxis.SetBoundary(0, 100);
         _plt2.YLabel("已提交 (%)");
@@ -111,7 +101,7 @@ public partial class MainWindow : Window
         WpCommit.Refresh();
     }
 
-    private void UpdateArray(double[] array, double last)
+    private static void UpdateArray(double[] array, double last)
     {
         var len = array.Length;
         Array.Copy(array, 1, array, 0, len - 1);
