@@ -73,6 +73,14 @@ public partial class MainWindow : Window
         _plotAvg.MarkerSize = 1;
         _plotEma.MarkerSize = 1;
         _updateMemoryTimer = new Timer(GetMemory, null, 0, 1000);
+
+        static string customTickFormatter(double position)
+        {
+            return $"{600 - position}";
+        }
+
+        _plt1.XAxis.TickLabelFormat(customTickFormatter);
+        _plt2.XAxis.TickLabelFormat(customTickFormatter);
     }
 
     private void ResetCharts()
