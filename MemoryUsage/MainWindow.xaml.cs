@@ -219,9 +219,9 @@ public partial class MainWindow : Window
 
     public static MemoryInfo GetSystemMemoryUsagePercentage()
     {
-        var toGb = 1024.0 * 1024.0;
+        const double toGb = 1024.0 * 1024.0;
         var wmiObject = new ManagementObjectSearcher("select * from Win32_OperatingSystem");
-        var mi = wmiObject.Get().Cast<ManagementObject>().Select(mo => new MemoryInfo
+        MemoryInfo mi = wmiObject.Get().Cast<ManagementObject>().Select(mo => new MemoryInfo
         {
             FreePhysicalMemory = Math.Round(double.Parse(mo["FreePhysicalMemory"].ToString()) / toGb, 2),
             TotalVisibleMemorySize = Math.Round(double.Parse(mo["TotalVisibleMemorySize"].ToString()) / toGb, 2),
