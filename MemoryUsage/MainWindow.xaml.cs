@@ -17,10 +17,9 @@ public partial class MainWindow : Window
     /// </summary>
     private const int MaxPeriod = 60 * 10;
 
-    private double _pageFileSize = 0.0;
-    private static object _locker = new object();
+    private double _pageFileSize;
+    private static readonly object Locker = new();
     private const int k = 30;// 移动平均最近点数;
-    public List<double> Times = new();
 
     public double[] Percentages = new double[MaxPeriod];
     public double[] Commits = new double[MaxPeriod];
@@ -33,7 +32,7 @@ public partial class MainWindow : Window
     private SignalPlot _plotCurrentCommit;
     private SignalPlot _plotAvg;
     private SignalPlot _plotEma;// ema
-    private double _ppTitle = 0.0;
+    private double _commitPctTitle;
 
     public MemoryViewModel Vm = new();
     private Plot _plt1;
@@ -64,10 +63,10 @@ public partial class MainWindow : Window
         _ema = new ExponentialMovingAverageIndicator(k);
         ResetCharts();
 
-        _plotUsed = _plt1.AddSignal(Percentages, 1, color: Color.Green, label: "used");
-        _plotCurrentCommit = _plt2.AddSignal(Commits, 1, color: Color.Green, label: "now"); ;
-        _plotAvg = _plt2.AddSignal(CommitsAvg, 1, color: Color.Blue, label: "avg");
-        _plotEma = _plt2.AddSignal(CommitsEma, 1, color: Color.Red, label: "ema");
+        _plotUsed = _plt1.AddSignal(Percentages, color: Color.Green, label: "used");
+        _plotCurrentCommit = _plt2.AddSignal(Commits, color: Color.Green, label: "now"); ;
+        _plotAvg = _plt2.AddSignal(CommitsAvg, color: Color.Blue, label: "avg");
+        _plotEma = _plt2.AddSignal(CommitsEma, color: Color.Red, label: "ema");
         _plt2.Legend(location: Alignment.UpperLeft);
 
         _plotUsed.MarkerSize = 1;
@@ -76,13 +75,13 @@ public partial class MainWindow : Window
         _plotEma.MarkerSize = 1;
 
         // 反转 x轴坐标 600-0
-        static string customTickFormatter(double position)
+        static string CustomTickFormatter(double position)
         {
             return $"{600 - position}";
         }
 
-        _plt1.XAxis.TickLabelFormat(customTickFormatter);
-        _plt2.XAxis.TickLabelFormat(customTickFormatter);
+        _plt1.XAxis.TickLabelFormat(CustomTickFormatter);
+        _plt2.XAxis.TickLabelFormat(CustomTickFormatter);
 
         _timer = new Timer(GetMemory, null, 0, 1000);
     }
@@ -124,11 +123,11 @@ public partial class MainWindow : Window
 
     public void GetMemory(object state)
     {
-        double p1 = 0.0;
-        double p2 = 0.0;
-        double virtualUsed = 0.0;
+        double p1;
+        double p2;
+        double virtualUsed;
         MemoryInfo mi;
-        lock (_locker)
+        lock (Locker)
         {
             mi = GetSystemMemoryUsagePercentage();
             p1 = ((mi.TotalVisibleMemorySize - mi.FreePhysicalMemory) / mi.TotalVisibleMemorySize) * 100;
@@ -143,7 +142,7 @@ public partial class MainWindow : Window
             UpdateArray(CommitsAvg, Math.Round(Commits.Average(), 2));
 
             _ema.AddDataPoint(p2);
-            var vv = _ema.Average;
+            double vv = _ema.Average;
             UpdateArray(CommitsEma, vv);
         }
 
@@ -190,10 +189,10 @@ public partial class MainWindow : Window
         {
             Dispatcher.Invoke(() =>
             {
-                if (Math.Abs(_ppTitle - p2) >= 0.5)
+                if (Math.Abs(_commitPctTitle - p2) >= 0.5)
                 {
-                    _ppTitle = p2;
-                    Title = Math.Round(_ppTitle, 1) + "%";
+                    _commitPctTitle = p2;
+                    Title = Math.Round(_commitPctTitle, 1) + "%";
                 }
 
                 WpUsed.Render();
@@ -248,17 +247,4 @@ public partial class MainWindow : Window
 
         return total;
     }
-}
-
-public class MemoryInfo
-{
-    public double FreePhysicalMemory { get; set; } = 1;
-
-    public double TotalVisibleMemorySize { get; set; } = 2;
-
-    public double FreeSpaceInPagingFiles { get; set; } = 3;
-
-    public double TotalVirtualMemorySize { get; set; } = 4;
-
-    public double FreeVirtualMemory { get; set; } = 5;
 }
