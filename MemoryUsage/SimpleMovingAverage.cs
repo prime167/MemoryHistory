@@ -1,4 +1,4 @@
-﻿namespace MemoryInfo;
+﻿namespace MemoryUsage;
 
 public class SimpleMovingAverage
 {
@@ -28,6 +28,6 @@ public class SimpleMovingAverage
         _index = (_index + 1) % _k;
 
         // calculate the average
-        return ((double)_sum) / _k;
+        return _sum / _k;
     }
 }

@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace MemoryInfo;
+namespace MemoryUsage;
 
 public partial class MemoryViewModel:ObservableObject
 {

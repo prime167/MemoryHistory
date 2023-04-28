@@ -5,7 +5,7 @@ using System.Windows;
 using ScottPlot;
 using ScottPlot.Plottable;
 
-namespace MemoryInfo;
+namespace MemoryUsage;
 
 public partial class MainWindow : Window
 {
@@ -64,6 +64,7 @@ public partial class MainWindow : Window
         _plotAvg.MarkerSize = 1;
         _plotEma.MarkerSize = 1;
 
+        // 反转 x轴坐标 600-0
         static string customTickFormatter(double position)
         {
             return $"{600 - position}";
@@ -78,9 +79,13 @@ public partial class MainWindow : Window
     private void ResetCharts()
     {
         _plt1.Clear();
+        _plt2.Clear();
 
         WpUsed.Configuration.DoubleClickBenchmark = false;
+        WpCommit.Configuration.DoubleClickBenchmark = false;
+
         WpUsed.MouseDoubleClick += WpUsed_MouseDoubleClick;
+        WpCommit.MouseDoubleClick += WpCommit_MouseDoubleClick;
 
         _plt1.XAxis.MinimumTickSpacing(1);
         _plt1.YAxis.SetBoundary(0, 100);
@@ -88,16 +93,14 @@ public partial class MainWindow : Window
         _plt1.YLabel("使用中 (%)");
         _plt1.XLabel("时间 (s)");
         _plt1.Title("内存使用 %");
-        WpUsed.Refresh();
 
-        _plt2.Clear();
-        WpCommit.Configuration.DoubleClickBenchmark = false;
-        WpCommit.MouseDoubleClick += WpCommit_MouseDoubleClick;
         _plt2.XAxis.MinimumTickSpacing(1);
         _plt2.YAxis.SetBoundary(0, 100);
         _plt2.YLabel("已提交 (%)");
         _plt2.XLabel("时间 (s)");
         _plt2.Title("虚拟内存 %");
+
+        WpUsed.Refresh();
         WpCommit.Refresh();
     }
 
@@ -195,11 +198,11 @@ public partial class MainWindow : Window
         WpCommit.Plot.AxisAuto();
     }
 
-    public (double percentageUsed, double percentageCommitted) GetSystemMemoryUsagePercentage()
+    public static (double percentageUsed, double percentageCommitted) GetSystemMemoryUsagePercentage()
     {
         var toGb = 1024.0 * 1024.0;
         var wmiObject = new ManagementObjectSearcher("select * from Win32_OperatingSystem");
-        var memoryValues = wmiObject.Get().Cast<ManagementObject>().Select(mo => new
+        var memoryValues = wmiObject.Get().Cast<ManagementObject>().Select(mo => new MemoryInfo
         {
             FreePhysicalMemory = Math.Round(double.Parse(mo["FreePhysicalMemory"].ToString()) / toGb, 2),
             TotalVisibleMemorySize = Math.Round(double.Parse(mo["TotalVisibleMemorySize"].ToString()) / toGb, 2),
@@ -208,15 +211,27 @@ public partial class MainWindow : Window
             FreeVirtualMemory = Math.Round(double.Parse(mo["FreeVirtualMemory"].ToString()) / toGb, 2),
         }).FirstOrDefault();
 
-        if (memoryValues != null)
-        {
-            var percentageUsed = ((memoryValues.TotalVisibleMemorySize - memoryValues.FreePhysicalMemory) / memoryValues.TotalVisibleMemorySize) * 100;
-            var tc = memoryValues.TotalVirtualMemorySize - memoryValues.FreeVirtualMemory;
-            //Console.WriteLine($"Total committed: {Math.Round(tc, 1)} GB");
-            var percentageCommitted = (tc / memoryValues.TotalVirtualMemorySize) * 100;
-            return (percentageUsed, percentageCommitted);
-        }
 
-        return (0, 0);
+        var percentageUsed = ((memoryValues.TotalVisibleMemorySize - memoryValues.FreePhysicalMemory) / memoryValues.TotalVisibleMemorySize) * 100;
+
+        var virtualUsed = memoryValues.TotalVirtualMemorySize - memoryValues.FreeVirtualMemory;
+        var percentageCommitted = (virtualUsed / memoryValues.TotalVirtualMemorySize) * 100;
+
+        return (percentageUsed, percentageCommitted);
     }
+
+
+}
+
+public record struct MemoryInfo
+{
+    public double FreePhysicalMemory { get; init; }
+
+    public double TotalVisibleMemorySize { get; init; }
+
+    public double FreeSpaceInPagingFiles { get; init; }
+
+    public double TotalVirtualMemorySize { get; set; }
+
+    public double FreeVirtualMemory { get; init; }
 }
