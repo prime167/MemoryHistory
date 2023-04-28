@@ -5,44 +5,50 @@ namespace MemoryUsage;
 public partial class MemoryViewModel:ObservableObject
 {
     [ObservableProperty] 
-    private double _currentPercentage;
+    private double _currentUsedPct;
 
     [ObservableProperty]
-    private double _minPercentage;
+    private double _minUsedPct;
 
     [ObservableProperty]
-    private double _maxPercentage;
+    private double _maxUsedPct;
 
     [ObservableProperty]
-    private DateTime _minPercentageTime;
+    private DateTime _minUsedPctTime;
 
     [ObservableProperty]
-    private DateTime _maxPercentageTime;
+    private DateTime _maxUsedPctTime;
 
     [ObservableProperty]
-    private string _minPercentageTimeStr;
+    private string _minUsedPctTimeStr;
 
     [ObservableProperty]
-    private string _maxPercentageTimeStr;
+    private string _maxUsedPctTimeStr;
 
     [ObservableProperty]
-    private double _currentCommit;
+    private double _currentCommitPct;
 
     [ObservableProperty]
-    private double _minCommit;
+    private double _minCommitPct;
 
     [ObservableProperty]
-    private double _maxCommit;
+    private double _maxCommitPct;
 
     [ObservableProperty]
-    private DateTime _minCommitTime;
+    private DateTime _minCommitPctTime;
 
     [ObservableProperty]
-    private DateTime _maxCommitTime;
+    private DateTime _maxCommitPctTime;
 
     [ObservableProperty]
-    private string _minCommitTimeStr;
+    private string _minCommitPctTimeStr;
 
     [ObservableProperty]
-    private string _maxCommitTimeStr;
+    private string _maxCommitPctTimeStr;
+
+    [ObservableProperty]
+    private string _commitDetailStr;
+
+    [ObservableProperty]
+    private string _pageFileDetailStr;
 }

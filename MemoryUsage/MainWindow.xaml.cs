@@ -3,17 +3,21 @@ using System.Drawing;
 using System.Management;
 using System.Windows;
 using ScottPlot;
+using ScottPlot.MinMaxSearchStrategies;
 using ScottPlot.Plottable;
 
 namespace MemoryUsage;
 
 public partial class MainWindow : Window
 {
+    private Timer _timer;
+
     /// <summary>
     /// 显示的时间范围
     /// </summary>
     private const int MaxPeriod = 60 * 10;
 
+    private double _pageFileSize = 0.0;
     private static object _locker = new object();
     private const int k = 30;// 移动平均最近点数;
     public List<double> Times = new();
@@ -38,15 +42,22 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        Vm.MinPercentage = 100;
-        Vm.MaxPercentage = 0;
-        Vm.MinCommit = 100;
-        Vm.MaxCommit = 0;
+        Vm.MinUsedPct = 100;
+        Vm.MaxUsedPct = 0;
+        Vm.MinCommitPct = 100;
+        Vm.MaxCommitPct = 0;
         DataContext = Vm;
+        double height = SystemParameters.FullPrimaryScreenHeight;
+        double width = SystemParameters.FullPrimaryScreenWidth;
+        double h1 = SystemParameters.WorkArea.Height;
+
+        Top = (h1 - Height) + 8;
+        Left = (width - Width) / 2;
     }
 
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
+        _pageFileSize = Math.Round(GetPageFileSize() / 1024.0, 2);
         _plt1 = WpUsed.Plot;
         _plt2 = WpCommit.Plot;
 
@@ -73,7 +84,7 @@ public partial class MainWindow : Window
         _plt1.XAxis.TickLabelFormat(customTickFormatter);
         _plt2.XAxis.TickLabelFormat(customTickFormatter);
 
-        var _ = new Timer(GetMemory, null, 0, 1000);
+        _timer = new Timer(GetMemory, null, 0, 1000);
     }
 
     private void ResetCharts()
@@ -115,10 +126,16 @@ public partial class MainWindow : Window
     {
         double p1 = 0.0;
         double p2 = 0.0;
+        double virtualUsed = 0.0;
+        MemoryInfo mi;
         lock (_locker)
         {
-            (p1, p2) = GetSystemMemoryUsagePercentage();
+            mi = GetSystemMemoryUsagePercentage();
+            p1 = ((mi.TotalVisibleMemorySize - mi.FreePhysicalMemory) / mi.TotalVisibleMemorySize) * 100;
             p1 = Math.Round(p1, 2);
+
+            virtualUsed = mi.TotalVirtualMemorySize - mi.FreeVirtualMemory;
+            p2 = (virtualUsed / mi.TotalVirtualMemorySize) * 100;
             p2 = Math.Round(p2, 2);
 
             UpdateArray(Percentages, p1);
@@ -130,42 +147,45 @@ public partial class MainWindow : Window
             UpdateArray(CommitsEma, vv);
         }
 
-        Vm.CurrentPercentage = p1;
+        Vm.CurrentUsedPct = p1;
 
-        if (Math.Abs(p2 - Vm.CurrentCommit) > 0.001)
+        if (p1 < Vm.MinUsedPct)
         {
-            Vm.CurrentCommit = p2;
+            Vm.MinUsedPct = p1;
+            Vm.MinUsedPctTime = DateTime.Now;
         }
 
-        if (p1 < Vm.MinPercentage)
+        if (p1 > Vm.MaxUsedPct)
         {
-            Vm.MinPercentage = p1;
-            Vm.MinPercentageTime = DateTime.Now;
+            Vm.MaxUsedPct = p1;
+            Vm.MaxUsedPctTime = DateTime.Now;
         }
 
-        if (p1 > Vm.MaxPercentage)
+        if (p2 < Vm.MinCommitPct)
         {
-            Vm.MaxPercentage = p1;
-            Vm.MaxPercentageTime = DateTime.Now;
+            Vm.MinCommitPct = p2;
+            Vm.MinCommitPctTime = DateTime.Now;
         }
 
-        if (p2 < Vm.MinCommit)
+        if (p2 > Vm.MaxCommitPct)
         {
-            Vm.MinCommit = p2;
-            Vm.MinCommitTime = DateTime.Now;
+            Vm.MaxCommitPct = p2;
+            Vm.MaxCommitPctTime = DateTime.Now;
         }
 
-        if (p2 > Vm.MaxCommit)
+        if (Math.Abs(p2 - Vm.CurrentCommitPct) > 0.001)
         {
-            Vm.MaxCommit = p2;
-            Vm.MaxCommitTime = DateTime.Now;
+            Vm.CurrentCommitPct = p2;
         }
 
-        Vm.MaxPercentageTimeStr = Utils.GetRelativeTime(Vm.MaxPercentageTime);
-        Vm.MinPercentageTimeStr = Utils.GetRelativeTime(Vm.MinPercentageTime);
-        Vm.MaxCommitTimeStr = Utils.GetRelativeTime(Vm.MaxCommitTime);
-        Vm.MinCommitTimeStr = Utils.GetRelativeTime(Vm.MinCommitTime);
-
+        Vm.MaxUsedPctTimeStr = Utils.GetRelativeTime(Vm.MaxUsedPctTime);
+        Vm.MinUsedPctTimeStr = Utils.GetRelativeTime(Vm.MinUsedPctTime);
+        Vm.MaxCommitPctTimeStr = Utils.GetRelativeTime(Vm.MaxCommitPctTime);
+        Vm.MinCommitPctTimeStr = Utils.GetRelativeTime(Vm.MinCommitPctTime);
+        var pageFileUsed = Math.Round(_pageFileSize - mi.FreeSpaceInPagingFiles, 2).ToString("0.00");
+        var totalPageFile = _pageFileSize.ToString("0.00");
+        Vm.CommitDetailStr = $"{Math.Round(virtualUsed, 2):0.00} GB / {mi.TotalVirtualMemorySize:0.00} GB, 空闲：{mi.FreeVirtualMemory:0.00} GB";
+        Vm.PageFileDetailStr = $"页面文件: {pageFileUsed} GB / {totalPageFile} GB";
         try
         {
             Dispatcher.Invoke(() =>
@@ -198,11 +218,11 @@ public partial class MainWindow : Window
         WpCommit.Plot.AxisAuto();
     }
 
-    public static (double percentageUsed, double percentageCommitted) GetSystemMemoryUsagePercentage()
+    public static MemoryInfo GetSystemMemoryUsagePercentage()
     {
         var toGb = 1024.0 * 1024.0;
         var wmiObject = new ManagementObjectSearcher("select * from Win32_OperatingSystem");
-        var memoryValues = wmiObject.Get().Cast<ManagementObject>().Select(mo => new MemoryInfo
+        var mi = wmiObject.Get().Cast<ManagementObject>().Select(mo => new MemoryInfo
         {
             FreePhysicalMemory = Math.Round(double.Parse(mo["FreePhysicalMemory"].ToString()) / toGb, 2),
             TotalVisibleMemorySize = Math.Round(double.Parse(mo["TotalVisibleMemorySize"].ToString()) / toGb, 2),
@@ -211,27 +231,34 @@ public partial class MainWindow : Window
             FreeVirtualMemory = Math.Round(double.Parse(mo["FreeVirtualMemory"].ToString()) / toGb, 2),
         }).FirstOrDefault();
 
-
-        var percentageUsed = ((memoryValues.TotalVisibleMemorySize - memoryValues.FreePhysicalMemory) / memoryValues.TotalVisibleMemorySize) * 100;
-
-        var virtualUsed = memoryValues.TotalVirtualMemorySize - memoryValues.FreeVirtualMemory;
-        var percentageCommitted = (virtualUsed / memoryValues.TotalVirtualMemorySize) * 100;
-
-        return (percentageUsed, percentageCommitted);
+        return mi;
     }
 
+    public static uint GetPageFileSize()
+    {
+        uint total = 0;
+        using (var query = new ManagementObjectSearcher("SELECT AllocatedBaseSize FROM Win32_PageFileUsage"))
+        {
+            foreach (ManagementBaseObject obj in query.Get())
+            {
+                uint used = (uint)obj.GetPropertyValue("AllocatedBaseSize");
+                total += used;
+            }
+        }
 
+        return total;
+    }
 }
 
-public record struct MemoryInfo
+public class MemoryInfo
 {
-    public double FreePhysicalMemory { get; init; }
+    public double FreePhysicalMemory { get; set; } = 1;
 
-    public double TotalVisibleMemorySize { get; init; }
+    public double TotalVisibleMemorySize { get; set; } = 2;
 
-    public double FreeSpaceInPagingFiles { get; init; }
+    public double FreeSpaceInPagingFiles { get; set; } = 3;
 
-    public double TotalVirtualMemorySize { get; set; }
+    public double TotalVirtualMemorySize { get; set; } = 4;
 
-    public double FreeVirtualMemory { get; init; }
+    public double FreeVirtualMemory { get; set; } = 5;
 }
