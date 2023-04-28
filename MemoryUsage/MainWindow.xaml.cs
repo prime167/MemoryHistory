@@ -19,7 +19,7 @@ public partial class MainWindow : Window
 
     private double _pageFileSize;
     private static readonly object Locker = new();
-    private const int k = 30;// 移动平均最近点数;
+    private const int DataCount = 30;// 移动平均最近点数;
 
     public double[] Percentages = new double[MaxPeriod];
     public double[] Commits = new double[MaxPeriod];
@@ -35,8 +35,8 @@ public partial class MainWindow : Window
     private double _commitPctTitle;
 
     public MemoryViewModel Vm = new();
-    private Plot _plt1;
-    private Plot _plt2;
+    private Plot _pltUsed;
+    private Plot _pltCommit;
 
     public MainWindow()
     {
@@ -57,39 +57,39 @@ public partial class MainWindow : Window
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
         _pageFileSize = Math.Round(GetPageFileSize() / 1024.0, 2);
-        _plt1 = WpUsed.Plot;
-        _plt2 = WpCommit.Plot;
+        _pltUsed = WpUsed.Plot;
+        _pltCommit = WpCommit.Plot;
 
-        _ema = new ExponentialMovingAverageIndicator(k);
+        _ema = new ExponentialMovingAverageIndicator(DataCount);
         ResetCharts();
 
-        _plotUsed = _plt1.AddSignal(Percentages, color: Color.Green, label: "used");
-        _plotCurrentCommit = _plt2.AddSignal(Commits, color: Color.Green, label: "now"); ;
-        _plotAvg = _plt2.AddSignal(CommitsAvg, color: Color.Blue, label: "avg");
-        _plotEma = _plt2.AddSignal(CommitsEma, color: Color.Red, label: "ema");
-        _plt2.Legend(location: Alignment.UpperLeft);
+        _plotUsed = _pltUsed.AddSignal(Percentages, color: Color.Green, label: "used");
+        _plotCurrentCommit = _pltCommit.AddSignal(Commits, color: Color.Green, label: "now"); ;
+        _plotAvg = _pltCommit.AddSignal(CommitsAvg, color: Color.Blue, label: "avg");
+        _plotEma = _pltCommit.AddSignal(CommitsEma, color: Color.Red, label: "ema");
+        _pltCommit.Legend(location: Alignment.UpperLeft);
 
         _plotUsed.MarkerSize = 1;
         _plotCurrentCommit.MarkerSize = 1;
         _plotAvg.MarkerSize = 1;
         _plotEma.MarkerSize = 1;
 
-        // 反转 x轴坐标 600-0
+        // x轴坐标逆序 600-0
         static string CustomTickFormatter(double position)
         {
             return $"{600 - position}";
         }
 
-        _plt1.XAxis.TickLabelFormat(CustomTickFormatter);
-        _plt2.XAxis.TickLabelFormat(CustomTickFormatter);
+        _pltUsed.XAxis.TickLabelFormat(CustomTickFormatter);
+        _pltCommit.XAxis.TickLabelFormat(CustomTickFormatter);
 
         _timer = new Timer(GetMemory, null, 0, 1000);
     }
 
     private void ResetCharts()
     {
-        _plt1.Clear();
-        _plt2.Clear();
+        _pltUsed.Clear();
+        _pltCommit.Clear();
 
         WpUsed.Configuration.DoubleClickBenchmark = false;
         WpCommit.Configuration.DoubleClickBenchmark = false;
@@ -97,26 +97,31 @@ public partial class MainWindow : Window
         WpUsed.MouseDoubleClick += WpUsed_MouseDoubleClick;
         WpCommit.MouseDoubleClick += WpCommit_MouseDoubleClick;
 
-        _plt1.XAxis.MinimumTickSpacing(1);
-        _plt1.YAxis.SetBoundary(0, 100);
-        _plt1.Grid();
-        _plt1.YLabel("使用中 (%)");
-        _plt1.XLabel("时间 (s)");
-        _plt1.Title("内存使用 %");
+        _pltUsed.XAxis.MinimumTickSpacing(1);
+        _pltUsed.YAxis.SetBoundary(0, 100);
+        _pltUsed.Grid();
+        _pltUsed.YLabel("使用中 (%)");
+        _pltUsed.XLabel("时间 (s)");
+        _pltUsed.Title("内存使用 %");
 
-        _plt2.XAxis.MinimumTickSpacing(1);
-        _plt2.YAxis.SetBoundary(0, 100);
-        _plt2.YLabel("已提交 (%)");
-        _plt2.XLabel("时间 (s)");
-        _plt2.Title("虚拟内存 %");
+        _pltCommit.XAxis.MinimumTickSpacing(1);
+        _pltCommit.YAxis.SetBoundary(0, 100);
+        _pltCommit.YLabel("已提交 (%)");
+        _pltCommit.XLabel("时间 (s)");
+        _pltCommit.Title("虚拟内存 %");
 
         WpUsed.Refresh();
         WpCommit.Refresh();
     }
 
+    /// <summary>
+    /// 数组元素左移 [1,2,3] => [2,3,null] 然后加入新元素
+    /// </summary>
+    /// <param name="array"></param>
+    /// <param name="last"></param>
     private static void UpdateArray(double[] array, double last)
     {
-        var len = array.Length;
+        int len = array.Length;
         Array.Copy(array, 1, array, 0, len - 1);
         array[^1] = last;
     }
@@ -197,8 +202,8 @@ public partial class MainWindow : Window
 
                 WpUsed.Render();
                 WpCommit.Render();
-                _plt1.AxisAuto();
-                _plt2.AxisAuto();
+                _pltUsed.AxisAuto();
+                _pltCommit.AxisAuto();
             });
         }
         catch (Exception e)

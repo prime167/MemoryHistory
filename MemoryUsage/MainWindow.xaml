@@ -7,6 +7,9 @@
         mc:Ignorable="d" Loaded="MainWindow_OnLoaded"
         xmlns:scottPlot="clr-namespace:ScottPlot;assembly=ScottPlot.WPF"
         Title="MainWindow" Height="500" Width="1300">
+    <Window.Resources>
+        <local:Trailing0Converter x:Key="Trailing0Converter"/>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="2*"/>
@@ -48,21 +51,21 @@
             <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" Content="内存占用 %" HorizontalAlignment="Center" FontSize="15" FontWeight="Bold" />
 
             <Label Grid.Row="1" Grid.Column="1" Content="当前:" />
-            <Label Grid.Row="1" Grid.Column="2" Content="{Binding CurrentUsedPct, StringFormat=N2, FallbackValue=52}" HorizontalContentAlignment="Right" />
+            <Label Grid.Row="1" Grid.Column="2" Content="{Binding CurrentUsedPct, Converter={StaticResource Trailing0Converter}, FallbackValue=52}" HorizontalContentAlignment="Right" />
             <Label Grid.Row="1" Grid.Column="3" Content="%" HorizontalContentAlignment="Left" />
 
             <Label Grid.Row="2" Grid.Column="1" Content="最小:" />
-            <Label Grid.Row="2" Grid.Column="2" Content="{Binding MinUsedPct, StringFormat=N2, FallbackValue=5}" HorizontalContentAlignment="Right" />
+            <Label Grid.Row="2" Grid.Column="2" Content="{Binding MinUsedPct, Converter={StaticResource Trailing0Converter}, FallbackValue=5}" HorizontalContentAlignment="Right" />
             <Label Grid.Row="2" Grid.Column="3" Content="%"  HorizontalContentAlignment="Left"/>
             <Label Grid.Row="2" Grid.Column="4" Content="{Binding MinUsedPctTimeStr, FallbackValue=20 Min ago}" HorizontalContentAlignment="Left"/>
             <Label Grid.Row="3" Grid.Column="1" Content="最大:" />
-            <Label Grid.Row="3" Grid.Column="2" Content="{Binding MaxUsedPct, StringFormat=N2, FallbackValue=79}" HorizontalContentAlignment="Right"/>
+            <Label Grid.Row="3" Grid.Column="2" Content="{Binding MaxUsedPct, Converter={StaticResource Trailing0Converter}, FallbackValue=79}" HorizontalContentAlignment="Right"/>
             <Label Grid.Row="3" Grid.Column="3" Content="%"  HorizontalContentAlignment="Left"/>
             <Label Grid.Row="3" Grid.Column="4" Content="{Binding MaxUsedPctTimeStr, FallbackValue=2 Min ago}" HorizontalContentAlignment="Left"/>
 
             <Label Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="4" Content="虚拟内存占用" HorizontalAlignment="Center" FontSize="15" FontWeight="Bold"/>
             <Label Grid.Row="1" Grid.Column="6" Content="当前:" />
-            <Label Grid.Row="1" Grid.Column="7" Content="{Binding CurrentCommitPct, StringFormat=N2, FallbackValue=3.5}" HorizontalContentAlignment="Right"/>
+            <Label Grid.Row="1" Grid.Column="7" Content="{Binding CurrentCommitPct, Converter={StaticResource Trailing0Converter}, FallbackValue=3.5}" HorizontalContentAlignment="Right"/>
             <Label Grid.Row="1" Grid.Column="8" Content="%"  HorizontalContentAlignment="Left"/>
             <StackPanel Grid.Row="1" Grid.Column="9" Orientation="Horizontal">
                 <Label  Content="{Binding CommitDetailStr, FallbackValue=31G / 40G }"  HorizontalContentAlignment="Left"/>
@@ -70,12 +73,12 @@
             </StackPanel>
             
             <Label Grid.Row="2" Grid.Column="6" Content="最小:" />
-            <Label Grid.Row="2" Grid.Column="7" Content="{Binding MinCommitPct, StringFormat=N2, FallbackValue=1}" HorizontalContentAlignment="Right"/>
+            <Label Grid.Row="2" Grid.Column="7" Content="{Binding MinCommitPct, Converter={StaticResource Trailing0Converter}, FallbackValue=1}" HorizontalContentAlignment="Right"/>
             <Label Grid.Row="2" Grid.Column="8" Content="%" HorizontalContentAlignment="Left"/>
             <Label Grid.Row="2" Grid.Column="9" Content="{Binding MinCommitPctTimeStr, FallbackValue=21 Min ago}" HorizontalContentAlignment="Left"/>
 
             <Label Grid.Row="3" Grid.Column="6" Content="最大:" />
-            <Label Grid.Row="3" Grid.Column="7" Content="{Binding MaxCommitPct, StringFormat=N2, FallbackValue=4}" HorizontalContentAlignment="Right"/>
+            <Label Grid.Row="3" Grid.Column="7" Content="{Binding MaxCommitPct, Converter={StaticResource Trailing0Converter}, FallbackValue=4}" HorizontalContentAlignment="Right"/>
             <Label Grid.Row="3" Grid.Column="8" Content="%" HorizontalContentAlignment="Left" />
             <Label Grid.Row="3" Grid.Column="9" Content="{Binding MaxCommitPctTimeStr, FallbackValue=45 Min ago}" HorizontalContentAlignment="Left"/>
         </Grid>
