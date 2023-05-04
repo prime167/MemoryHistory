@@ -65,13 +65,13 @@ public partial class MainWindow : Window
 
         _plotUsed = _pltUsed.AddSignal(Percentages, color: Color.Green, label: "used");
         _plotCurrentCommit = _pltCommit.AddSignal(Commits, color: Color.Green, label: "now"); ;
-        _plotAvg = _pltCommit.AddSignal(CommitsAvg, color: Color.Blue, label: "avg");
+        //_plotAvg = _pltCommit.AddSignal(CommitsAvg, color: Color.Blue, label: "avg");
         _plotEma = _pltCommit.AddSignal(CommitsEma, color: Color.Red, label: "ema");
         _pltCommit.Legend(location: Alignment.UpperLeft);
 
         _plotUsed.MarkerSize = 1;
         _plotCurrentCommit.MarkerSize = 1;
-        _plotAvg.MarkerSize = 1;
+        //_plotAvg.MarkerSize = 1;
         _plotEma.MarkerSize = 1;
 
         // x轴坐标逆序 600-0
@@ -136,15 +136,15 @@ public partial class MainWindow : Window
         {
             mi = GetSystemMemoryUsagePercentage();
             p1 = ((mi.TotalVisibleMemorySize - mi.FreePhysicalMemory) / mi.TotalVisibleMemorySize) * 100;
-            p1 = Math.Round(p1, 2);
+            p1 = Math.Round(p1, 1);
 
             virtualUsed = mi.TotalVirtualMemorySize - mi.FreeVirtualMemory;
             p2 = (virtualUsed / mi.TotalVirtualMemorySize) * 100;
-            p2 = Math.Round(p2, 2);
+            p2 = Math.Round(p2, 1);
 
             UpdateArray(Percentages, p1);
             UpdateArray(Commits, p2);
-            UpdateArray(CommitsAvg, Math.Round(Commits.Average(), 2));
+            //UpdateArray(CommitsAvg, Math.Round(Commits.Average(), 1));
 
             _ema.AddDataPoint(p2);
             double vv = _ema.Average;
@@ -194,10 +194,10 @@ public partial class MainWindow : Window
         {
             Dispatcher.Invoke(() =>
             {
-                if (Math.Abs(_commitPctTitle - p2) >= 0.5)
+                if (Math.Abs(_commitPctTitle - p2) >= 1)
                 {
                     _commitPctTitle = p2;
-                    Title = Math.Round(_commitPctTitle, 1) + "%";
+                    Title = Math.Round(_commitPctTitle, 0) + "%";
                 }
 
                 WpUsed.Render();
