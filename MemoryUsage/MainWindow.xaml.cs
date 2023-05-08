@@ -30,7 +30,6 @@ public partial class MainWindow : Window
 
     private SignalPlot _plotUsed;
     private SignalPlot _plotCurrentCommit;
-    private SignalPlot _plotAvg;
     private SignalPlot _plotEma;// ema
     private double _commitPctTitle;
 
@@ -65,13 +64,11 @@ public partial class MainWindow : Window
 
         _plotUsed = _pltUsed.AddSignal(Percentages, color: Color.Green, label: "used");
         _plotCurrentCommit = _pltCommit.AddSignal(Commits, color: Color.Silver, label: "now"); ;
-        //_plotAvg = _pltCommit.AddSignal(CommitsAvg, color: Color.Blue, label: "avg");
         _plotEma = _pltCommit.AddSignal(CommitsEma, color: Color.Red, label: "ema");
         _pltCommit.Legend(location: Alignment.UpperLeft);
 
         _plotUsed.MarkerSize = 1;
         _plotCurrentCommit.MarkerSize = 1;
-        //_plotAvg.MarkerSize = 1;
         _plotEma.MarkerSize = 1;
 
         // x轴坐标逆序 600-0
@@ -146,7 +143,6 @@ public partial class MainWindow : Window
 
             UpdateArray(Percentages, p1);
             UpdateArray(Commits, p2);
-            //UpdateArray(CommitsAvg, Math.Round(Commits.Average(), 1));
 
             _ema.AddDataPoint(p2);
             double vv = _ema.Average;
