@@ -1,9 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Management;
 using System.Windows;
 using ScottPlot;
-using ScottPlot.MinMaxSearchStrategies;
 using ScottPlot.Plottable;
 
 namespace MemoryUsage;
@@ -19,7 +19,7 @@ public partial class MainWindow : Window
 
     private double _pageFileSize;
     private static readonly object Locker = new();
-    private const int DataCount = 30;// 移动平均最近点数;
+    private const int DataCount = 10;// 移动平均最近点数;
 
     public double[] Percentages = new double[MaxPeriod];
     public double[] Commits = new double[MaxPeriod];
@@ -64,7 +64,7 @@ public partial class MainWindow : Window
         ResetCharts();
 
         _plotUsed = _pltUsed.AddSignal(Percentages, color: Color.Green, label: "used");
-        _plotCurrentCommit = _pltCommit.AddSignal(Commits, color: Color.Green, label: "now"); ;
+        _plotCurrentCommit = _pltCommit.AddSignal(Commits, color: Color.Silver, label: "now"); ;
         //_plotAvg = _pltCommit.AddSignal(CommitsAvg, color: Color.Blue, label: "avg");
         _plotEma = _pltCommit.AddSignal(CommitsEma, color: Color.Red, label: "ema");
         _pltCommit.Legend(location: Alignment.UpperLeft);
@@ -132,6 +132,8 @@ public partial class MainWindow : Window
         double p2;
         double virtualUsed;
         MemoryInfo mi;
+        _pageFileSize = Math.Round(GetPageFileSize() / 1024.0, 2);
+
         lock (Locker)
         {
             mi = GetSystemMemoryUsagePercentage();
