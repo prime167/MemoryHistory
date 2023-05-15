@@ -67,6 +67,21 @@ public partial class MainWindow : Window
         _plotEma = _pltCommit.AddSignal(CommitsEma, color: Color.Red, label: "ema");
         _pltCommit.Legend(location: Alignment.UpperLeft);
 
+        // 右侧显示Y轴
+        _plotUsed.YAxisIndex = _pltUsed.RightAxis.AxisIndex;
+        _pltUsed.RightAxis.Ticks(true);
+        _pltUsed.LeftAxis.Ticks(false);
+        _pltUsed.RightAxis.Label("使用中 (%)");
+        //_pltUsed.YLabel("使用中 (%)");
+
+        // 右侧显示Y轴
+        _plotCurrentCommit.YAxisIndex = _pltCommit.RightAxis.AxisIndex;
+        _plotEma.YAxisIndex = _pltCommit.RightAxis.AxisIndex;
+        _pltCommit.RightAxis.Ticks(true);
+        _pltCommit.LeftAxis.Ticks(false);
+        _pltCommit.RightAxis.Label("已提交 (%)");
+        //_pltCommit.YLabel("已提交 (%)");
+
         _plotUsed.MarkerSize = 1;
         _plotCurrentCommit.MarkerSize = 1;
         _plotEma.MarkerSize = 1;
@@ -95,15 +110,15 @@ public partial class MainWindow : Window
         WpCommit.MouseDoubleClick += WpCommit_MouseDoubleClick;
 
         _pltUsed.XAxis.MinimumTickSpacing(1);
+        _pltUsed.YAxis.MinimumTickSpacing(5);
         _pltUsed.YAxis.SetBoundary(0, 100);
         _pltUsed.Grid();
-        _pltUsed.YLabel("使用中 (%)");
         _pltUsed.XLabel("时间 (s)");
         _pltUsed.Title("内存使用 %");
 
         _pltCommit.XAxis.MinimumTickSpacing(1);
+        _pltCommit.YAxis.MinimumTickSpacing(5);
         _pltCommit.YAxis.SetBoundary(0, 100);
-        _pltCommit.YLabel("已提交 (%)");
         _pltCommit.XLabel("时间 (s)");
         _pltCommit.Title("虚拟内存 %");
 
