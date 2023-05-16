@@ -23,7 +23,6 @@ public partial class MainWindow : Window
 
     public double[] Percentages = new double[MaxPeriod];
     public double[] Commits = new double[MaxPeriod];
-    public double[] CommitsAvg = new double[MaxPeriod];
     public double[] CommitsEma = new double[MaxPeriod];
 
     private ExponentialMovingAverageIndicator _ema;
@@ -85,6 +84,10 @@ public partial class MainWindow : Window
         _plotUsed.MarkerSize = 1;
         _plotCurrentCommit.MarkerSize = 1;
         _plotEma.MarkerSize = 1;
+
+        _plotUsed.MarkerShape = MarkerShape.none;
+        _plotCurrentCommit.MarkerShape = MarkerShape.none;
+        _plotEma.MarkerShape = MarkerShape.none;
 
         // x轴坐标逆序 MaxPeriod ~ 0
         static string CustomTickFormatter(double position)
