@@ -15,7 +15,7 @@ public partial class MainWindow : Window
     /// <summary>
     /// 显示的时间范围
     /// </summary>
-    private const int MaxPeriod = 60 * 10;
+    private const int MaxPeriod = 60 * 60; // s
 
     private double _pageFileSize;
     private static readonly object Locker = new();
@@ -86,10 +86,10 @@ public partial class MainWindow : Window
         _plotCurrentCommit.MarkerSize = 1;
         _plotEma.MarkerSize = 1;
 
-        // x轴坐标逆序 600-0
+        // x轴坐标逆序 MaxPeriod ~ 0
         static string CustomTickFormatter(double position)
         {
-            return $"{600 - position}";
+            return $"{MaxPeriod - position}";
         }
 
         _pltUsed.XAxis.TickLabelFormat(CustomTickFormatter);
