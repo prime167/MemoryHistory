@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemoryUsageAvalonia", "Memo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScottPlot.WPF", "..\..\OtherCode\ScottPlot\src\ScottPlot4\ScottPlot.WPF\ScottPlot.WPF.csproj", "{DB2BF168-584E-4F74-8603-D9ACE62DA503}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScottPlot", "..\..\OtherCode\ScottPlot\src\ScottPlot4\ScottPlot\ScottPlot.csproj", "{578DBA45-96AC-4054-844D-4DD6C323A605}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{DB2BF168-584E-4F74-8603-D9ACE62DA503}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB2BF168-584E-4F74-8603-D9ACE62DA503}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB2BF168-584E-4F74-8603-D9ACE62DA503}.Release|Any CPU.Build.0 = Release|Any CPU
+		{578DBA45-96AC-4054-844D-4DD6C323A605}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{578DBA45-96AC-4054-844D-4DD6C323A605}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{578DBA45-96AC-4054-844D-4DD6C323A605}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{578DBA45-96AC-4054-844D-4DD6C323A605}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
