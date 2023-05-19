@@ -5,6 +5,7 @@ using System.Management;
 using System.Windows;
 using ScottPlot;
 using ScottPlot.Plottable;
+using ScottPlot.Plottable.DataLoggerViews;
 
 namespace MemoryUsage;
 
@@ -24,12 +25,14 @@ public partial class MainWindow : Window
     public double[] Percentages = new double[MaxPeriod];
     public double[] Commits = new double[MaxPeriod];
     public double[] CommitsEma = new double[MaxPeriod];
+    double LastPointValue = 0;
 
     private ExponentialMovingAverageIndicator _ema;
 
     private SignalPlot _plotUsed;
-    private SignalPlot _plotCurrentCommit;
-    private SignalPlot _plotEma;// ema
+   // private SignalPlot _plotCurrentCommit;
+    //private SignalPlot _plotEma;// ema
+    private ScatterDataLogger _plotEma;// ema
     private double _commitPctTitle;
 
     public MemoryViewModel Vm = new();
@@ -62,9 +65,15 @@ public partial class MainWindow : Window
         ResetCharts();
 
         _plotUsed = _pltUsed.AddSignal(Percentages, color: Color.Green, label: "used");
-        _plotCurrentCommit = _pltCommit.AddSignal(Commits, color: Color.Silver, label: "now"); ;
-        _plotEma = _pltCommit.AddSignal(CommitsEma, color: Color.Red, label: "ema");
-        _pltCommit.Legend(location: Alignment.UpperLeft);
+        _plotEma  = _pltCommit.AddScatterLogger();
+        _plotEma.LoggerView = new Slide();
+        _pltCommit.SetAxisLimits(null,null,0,100);
+        _plotEma.Add(0, 20);
+        _plotEma.Add(1, 21);
+        WpCommit.Refresh();
+        //_plotCurrentCommit = _pltCommit.AddSignal(Commits, color: Color.Silver, label: "now"); ;
+        //_plotEma = _pltCommit.AddSignal(CommitsEma, color: Color.Red, label: "ema");
+        //_pltCommit.Legend(location: Alignment.UpperLeft);
 
         // 右侧显示Y轴
         _plotUsed.YAxisIndex = _pltUsed.RightAxis.AxisIndex;
@@ -74,20 +83,20 @@ public partial class MainWindow : Window
         //_pltUsed.YLabel("使用中 (%)");
 
         // 右侧显示Y轴
-        _plotCurrentCommit.YAxisIndex = _pltCommit.RightAxis.AxisIndex;
+        //_plotCurrentCommit.YAxisIndex = _pltCommit.RightAxis.AxisIndex;
         _plotEma.YAxisIndex = _pltCommit.RightAxis.AxisIndex;
         _pltCommit.RightAxis.Ticks(true);
         _pltCommit.LeftAxis.Ticks(false);
         _pltCommit.RightAxis.Label("已提交 (%)");
-        //_pltCommit.YLabel("已提交 (%)");
+        _pltCommit.YLabel("已提交 (%)");
 
         _plotUsed.MarkerSize = 1;
-        _plotCurrentCommit.MarkerSize = 1;
-        _plotEma.MarkerSize = 1;
+        //_plotCurrentCommit.MarkerSize = 1;
+        //_plotEma.MarkerSize = 1;
 
         _plotUsed.MarkerShape = MarkerShape.none;
-        _plotCurrentCommit.MarkerShape = MarkerShape.none;
-        _plotEma.MarkerShape = MarkerShape.none;
+        //_plotCurrentCommit.MarkerShape = MarkerShape.none;
+        //_plotEma.MarkerShape = MarkerShape.none;
 
         // x轴坐标逆序 MaxPeriod ~ 0
         static string CustomTickFormatter(double position)
@@ -96,7 +105,7 @@ public partial class MainWindow : Window
         }
 
         _pltUsed.XAxis.TickLabelFormat(CustomTickFormatter);
-        _pltCommit.XAxis.TickLabelFormat(CustomTickFormatter);
+        //_pltCommit.XAxis.TickLabelFormat(CustomTickFormatter);
 
         _timer = new Timer(GetMemory, null, 0, 1000);
     }
@@ -104,13 +113,13 @@ public partial class MainWindow : Window
     private void ResetCharts()
     {
         _pltUsed.Clear();
-        _pltCommit.Clear();
+        //_pltCommit.Clear();
 
         WpUsed.Configuration.DoubleClickBenchmark = false;
-        WpCommit.Configuration.DoubleClickBenchmark = false;
+        //WpCommit.Configuration.DoubleClickBenchmark = false;
 
         WpUsed.MouseDoubleClick += WpUsed_MouseDoubleClick;
-        WpCommit.MouseDoubleClick += WpCommit_MouseDoubleClick;
+        //WpCommit.MouseDoubleClick += WpCommit_MouseDoubleClick;
 
         _pltUsed.XAxis.MinimumTickSpacing(1);
         _pltUsed.YAxis.MinimumTickSpacing(5);
@@ -119,14 +128,14 @@ public partial class MainWindow : Window
         _pltUsed.XLabel("时间 (s)");
         _pltUsed.Title("内存使用 %");
 
-        _pltCommit.XAxis.MinimumTickSpacing(1);
-        _pltCommit.YAxis.MinimumTickSpacing(5);
-        _pltCommit.YAxis.SetBoundary(0, 100);
-        _pltCommit.XLabel("时间 (s)");
-        _pltCommit.Title("虚拟内存 %");
+        //_pltCommit.XAxis.MinimumTickSpacing(1);
+        //_pltCommit.YAxis.MinimumTickSpacing(5);
+        //_pltCommit.YAxis.SetBoundary(0, 100);
+        //_pltCommit.XLabel("时间 (s)");
+        //_pltCommit.Title("虚拟内存 %");
 
         WpUsed.Refresh();
-        WpCommit.Refresh();
+        //WpCommit.Refresh();
     }
 
     /// <summary>
@@ -160,11 +169,10 @@ public partial class MainWindow : Window
             p2 = Math.Round(p2, 1);
 
             UpdateArray(Percentages, p1);
-            UpdateArray(Commits, p2);
+            //UpdateArray(Commits, p2);
 
             _ema.AddDataPoint(p2);
-            double vv = _ema.Average;
-            UpdateArray(CommitsEma, vv);
+            
         }
 
         Vm.CurrentUsedPct = p1;
@@ -215,11 +223,19 @@ public partial class MainWindow : Window
                     _commitPctTitle = p2;
                     Title = Math.Round(_commitPctTitle, 0) + "%";
                 }
+                double vv = _ema.Average;
+                //LastPointValue = LastPointValue + Rand.NextDouble() - .5;
+                _plotEma.Add(_plotEma.Count, vv);
+                //UpdateArray(CommitsEma, vv);
+                if (_plotEma.Count != _plotEma.LastRenderCount)
+                {
+                    WpCommit.Refresh();
 
+                }
                 WpUsed.Render();
-                WpCommit.Render();
+                //WpCommit.Render();
                 _pltUsed.AxisAuto();
-                _pltCommit.AxisAuto();
+                //_pltCommit.AxisAuto();
             });
         }
         catch (Exception e)

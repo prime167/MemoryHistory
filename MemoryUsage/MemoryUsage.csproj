@@ -11,8 +11,12 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.*" />
     <PackageReference Include="NodaTime" Version="3.1.*" />
-    <PackageReference Include="ScottPlot.WPF" Version="4.1.*" />
+    <!--<PackageReference Include="ScottPlot.WPF" Version="4.1.*" />-->
     <PackageReference Include="System.Management" Version="7.0.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\OtherCode\ScottPlot\src\ScottPlot4\ScottPlot.WPF\ScottPlot.WPF.csproj" />
   </ItemGroup>
 
 </Project>
