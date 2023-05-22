@@ -22,8 +22,6 @@ public partial class MainWindow : Window
     private static readonly object Locker = new();
     private const int DataCount = 10;// 移动平均最近点数;
 
-    public double[] Percentages = new double[MaxPeriod];
-
     private ExponentialMovingAverageIndicator _ema;
 
     private ScatterDataLogger _plotUsed;
