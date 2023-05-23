@@ -1,4 +1,4 @@
-﻿namespace MemoryUsageAvalonia;
+﻿namespace MemoryUsage.Common;
 
 public class ExponentialMovingAverageIndicator
 {

@@ -1,13 +1,12 @@
-﻿using System;
-using System.Diagnostics;
-using System.Drawing;
+﻿using System.Diagnostics;
 using System.Management;
 using System.Windows;
+using MemoryUsage.Common;
 using ScottPlot;
 using ScottPlot.Plottable;
 using ScottPlot.Plottable.DataLoggerViews;
 
-namespace MemoryUsage;
+namespace MemoryUsage.WPF;
 
 public partial class MainWindow : Window
 {

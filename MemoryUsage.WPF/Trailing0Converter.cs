@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
 
-namespace MemoryUsage;
+namespace MemoryUsage.WPF;
 
 public class Trailing0Converter : IValueConverter
 {

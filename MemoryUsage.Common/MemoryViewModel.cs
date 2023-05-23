@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace MemoryUsage;
+namespace MemoryUsage.Common;
 
-public partial class MemoryViewModel:ObservableObject
+public partial class MemoryViewModel : ObservableObject
 {
-    [ObservableProperty] 
+    [ObservableProperty]
     private double _currentUsedPct;
 
     [ObservableProperty]
