@@ -16,7 +16,7 @@ public partial class MainWindow : Window
     /// <summary>
     /// 显示的时间范围
     /// </summary>
-    private const int MaxPeriod = 60 * 10; // s
+    private const int MaxPeriod = 60 * 30; // s
 
     private double _pageFileSize;
     private static readonly object Locker = new();
