@@ -22,7 +22,7 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
     <!--<PackageReference Include="ScottPlot.Avalonia" Version="4.1.*" />-->
     <PackageReference Include="XamlNameReferenceGenerator" Version="1.6.*" />
-    <PackageReference Include="System.Management" Version="7.0.*" />
+    <PackageReference Include="System.Management" Version="8.0.0-preview.*" />
   </ItemGroup>
         
   <ItemGroup>
