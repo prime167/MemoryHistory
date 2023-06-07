@@ -9,7 +9,6 @@ using System.Management;
 using System.Linq;
 using Avalonia;
 using MemoryUsage.Common;
-using ScottPlot.Plottable.DataLoggerViews;
 
 namespace MemoryUsageAvalonia;
 
@@ -28,8 +27,8 @@ public partial class MainWindow : Window
 
     private ExponentialMovingAverageIndicator _ema;
 
-    private ScatterDataLogger _plotUsed;
-    private ScatterDataLogger _plotEma; // ema
+    private DataStreamer _plotUsed;
+    private DataStreamer _plotEma; // ema
     private double _commitPctTitle;
 
     public MemoryViewModel Vm = new();
@@ -61,37 +60,6 @@ public partial class MainWindow : Window
         _ema = new ExponentialMovingAverageIndicator(DataCount);
         ResetCharts();
 
-        _plotUsed = _pltUsed.AddScatterLogger();
-        _plotUsed.LoggerView = new Slide { PaddingFraction = 0, ViewWidth = MaxPeriod };
-
-        _plotEma = _pltCommit.AddScatterLogger();
-        _plotEma.LoggerView = new Slide { PaddingFraction = 0, ViewWidth = MaxPeriod };
-
-        _pltUsed.SetAxisLimits(0, null, 0, 100);
-        _pltCommit.SetAxisLimits(0, null, 0, 100);
-
-        _plotUsed.Add(0, 1);
-        _plotUsed.Add(1, 2);
-        WpUsed.Refresh();
-
-        _plotEma.Add(0, 1);
-        _plotEma.Add(1, 2);
-        WpCommit.Refresh();
-
-        // 右侧显示Y轴
-        _plotUsed.YAxisIndex = _pltUsed.RightAxis.AxisIndex;
-        _pltUsed.RightAxis.Ticks(true);
-        _pltUsed.LeftAxis.Ticks(false);
-        _pltUsed.RightAxis.Label("使用中 (%)");
-        //_pltUsed.YLabel("使用中 (%)");
-
-        // 右侧显示Y轴
-        _plotEma.YAxisIndex = _pltCommit.RightAxis.AxisIndex;
-        _pltCommit.RightAxis.Ticks(true);
-        _pltCommit.LeftAxis.Ticks(false);
-        _pltCommit.RightAxis.Label("已提交 (%)");
-        //_pltCommit.YLabel("已提交 (%)");
-
         _timer = new Timer(GetMemory, null, 0, 1000);
     }
 
@@ -105,19 +73,56 @@ public partial class MainWindow : Window
 
         _pltUsed.XAxis.MinimumTickSpacing(1);
         _pltUsed.YAxis.MinimumTickSpacing(5);
-        _pltUsed.YAxis.SetBoundary(0, 100);
         _pltUsed.Grid();
         _pltUsed.XLabel("时间 (s)");
         _pltUsed.Title("内存使用 %");
 
         _pltCommit.XAxis.MinimumTickSpacing(1);
         _pltCommit.YAxis.MinimumTickSpacing(5);
-        _pltCommit.YAxis.SetBoundary(0, 100);
         _pltCommit.XLabel("时间 (s)");
         _pltCommit.Title("虚拟内存 %");
 
+        _plotUsed = _pltUsed.AddDataStreamer(MaxPeriod);
+        _plotUsed.ViewScrollLeft();
+
+        _plotEma = _pltCommit.AddDataStreamer(MaxPeriod);
+        _plotEma.ViewScrollLeft();
+
+        //_pltUsed.SetAxisLimits(0, MaxPeriod, 0, 100, 1);
+        //_pltUsed.YAxis2.SetZoomOutLimit(100);
+        //_pltUsed.YAxis2.SetZoomInLimit(0);
+        _pltUsed.YAxis2.SetBoundary(0, 100);
+        _pltUsed.YAxis2.SetInnerBoundary(0, 100);
+        WpUsed.Configuration.Pan = false;
+        WpUsed.Configuration.Zoom = false;
+        WpUsed.Configuration.ScrollWheelZoom = false;
+        WpUsed.Configuration.MiddleClickDragZoom = false;
+
+        //_pltCommit.SetAxisLimits(0, MaxPeriod, 0, 100, 1);
+        //_pltCommit.YAxis2.SetZoomOutLimit(100);
+        //_pltCommit.YAxis2.SetZoomInLimit(0);
+        _pltCommit.YAxis2.SetBoundary(0, 100);
+        _pltCommit.YAxis2.SetInnerBoundary(0, 100);
+        WpCommit.Configuration.Pan = false;
+        WpCommit.Configuration.Zoom = false;
+        WpCommit.Configuration.ScrollWheelZoom = false;
+        WpCommit.Configuration.MiddleClickDragZoom = false;
+
         WpUsed.Refresh();
         WpCommit.Refresh();
+
+        // 右侧显示Y轴
+        _plotUsed.YAxisIndex = _pltUsed.RightAxis.AxisIndex;
+        _pltUsed.RightAxis.Ticks(true);
+        _pltUsed.LeftAxis.Ticks(false);
+        _pltUsed.RightAxis.Label("使用中 (%)");
+        _pltUsed.YLabel("使用中 (%)");
+
+        // 右侧显示Y轴
+        _plotEma.YAxisIndex = _pltCommit.RightAxis.AxisIndex;
+        _pltCommit.RightAxis.Ticks(true);
+        _pltCommit.LeftAxis.Ticks(false);
+        _pltCommit.RightAxis.Label("已提交 (%)");
     }
 
     public void GetMemory(object state)
@@ -191,15 +196,15 @@ public partial class MainWindow : Window
                     Title = Math.Round(_commitPctTitle, 0) + "%";
                 }
 
-                _plotUsed.Add(_plotEma.Count, p1);
-                if (_plotUsed.Count != _plotUsed.LastRenderCount)
+                _plotUsed.Add(p1);
+                if (_plotUsed.Count != _plotUsed.CountTotalOnLastRender)
                 {
                     WpUsed.Refresh();
                 }
 
                 double vv = _ema.Average;
-                _plotEma.Add(_plotEma.Count, vv);
-                if (_plotEma.Count != _plotEma.LastRenderCount)
+                _plotEma.Add(vv);
+                if (_plotEma.Count != _plotEma.CountTotalOnLastRender)
                 {
                     WpCommit.Refresh();
                 }
