@@ -27,8 +27,8 @@ public partial class MainWindow : Window
 
     private ExponentialMovingAverageIndicator _ema;
 
-    private DataStreamer _plotUsed;
-    private DataStreamer _plotEma; // ema
+    private DataStreamer _streamerUsed;
+    private DataStreamer _streamerCommit;
     private double _commitPctTitle;
 
     public MemoryViewModel Vm = new();
@@ -45,7 +45,7 @@ public partial class MainWindow : Window
         DataContext = Vm;
     }
 
-    private void Main_OnOpened(object? sender, EventArgs e)
+    private void Main_OnOpened(object sender, EventArgs e)
     {
         double height = Screens.Primary.Bounds.Height;
         double width = Screens.Primary.Bounds.Width;
@@ -54,8 +54,8 @@ public partial class MainWindow : Window
         main.Position = new PixelPoint((int)((width - main.Width) / 2), (int)((h1 - main.Height) - 32));
 
         _pageFileSize = Math.Round(GetPageFileSize() / 1024.0, 2);
-        _pltUsed = WpUsed.Plot;
-        _pltCommit = WpCommit.Plot;
+        _pltUsed = ApUsed.Plot;
+        _pltCommit = ApCommit.Plot;
 
         _ema = new ExponentialMovingAverageIndicator(DataCount);
         ResetCharts();
@@ -68,8 +68,8 @@ public partial class MainWindow : Window
         _pltUsed.Clear();
         _pltCommit.Clear();
 
-        WpUsed.Configuration.DoubleClickBenchmark = false;
-        WpCommit.Configuration.DoubleClickBenchmark = false;
+        ApUsed.Configuration.DoubleClickBenchmark = false;
+        ApCommit.Configuration.DoubleClickBenchmark = false;
 
         _pltUsed.XAxis.MinimumTickSpacing(1);
         _pltUsed.YAxis.MinimumTickSpacing(5);
@@ -82,48 +82,47 @@ public partial class MainWindow : Window
         _pltCommit.XLabel("时间 (s)");
         _pltCommit.Title("虚拟内存 %");
 
-        _plotUsed = _pltUsed.AddDataStreamer(MaxPeriod);
-        _plotUsed.ViewScrollLeft();
+        _streamerUsed = _pltUsed.AddDataStreamer(MaxPeriod);
+        _streamerUsed.ViewScrollLeft();
 
-        _plotEma = _pltCommit.AddDataStreamer(MaxPeriod);
-        _plotEma.ViewScrollLeft();
+        _streamerCommit = _pltCommit.AddDataStreamer(MaxPeriod);
+        _streamerCommit.ViewScrollLeft();
 
         //_pltUsed.SetAxisLimits(0, MaxPeriod, 0, 100, 1);
         //_pltUsed.YAxis2.SetZoomOutLimit(100);
         //_pltUsed.YAxis2.SetZoomInLimit(0);
         _pltUsed.YAxis2.SetBoundary(0, 100);
         _pltUsed.YAxis2.SetInnerBoundary(0, 100);
-        WpUsed.Configuration.Pan = false;
-        WpUsed.Configuration.Zoom = false;
-        WpUsed.Configuration.ScrollWheelZoom = false;
-        WpUsed.Configuration.MiddleClickDragZoom = false;
+        ApUsed.Configuration.Pan = false;
+        ApUsed.Configuration.Zoom = false;
+        ApUsed.Configuration.ScrollWheelZoom = false;
+        ApUsed.Configuration.MiddleClickDragZoom = false;
 
         //_pltCommit.SetAxisLimits(0, MaxPeriod, 0, 100, 1);
         //_pltCommit.YAxis2.SetZoomOutLimit(100);
         //_pltCommit.YAxis2.SetZoomInLimit(0);
         _pltCommit.YAxis2.SetBoundary(0, 100);
         _pltCommit.YAxis2.SetInnerBoundary(0, 100);
-        WpCommit.Configuration.Pan = false;
-        WpCommit.Configuration.Zoom = false;
-        WpCommit.Configuration.ScrollWheelZoom = false;
-        WpCommit.Configuration.MiddleClickDragZoom = false;
-
+        ApCommit.Configuration.Pan = false;
+        ApCommit.Configuration.Zoom = false;
+        ApCommit.Configuration.ScrollWheelZoom = false;
+        ApCommit.Configuration.MiddleClickDragZoom = false;
 
         // 右侧显示Y轴
-        _plotUsed.YAxisIndex = _pltUsed.RightAxis.AxisIndex;
+        _streamerUsed.YAxisIndex = _pltUsed.RightAxis.AxisIndex;
         _pltUsed.RightAxis.Ticks(true);
         _pltUsed.LeftAxis.Ticks(false);
         _pltUsed.RightAxis.Label("使用中 (%)");
         _pltUsed.YLabel("使用中 (%)");
 
         // 右侧显示Y轴
-        _plotEma.YAxisIndex = _pltCommit.RightAxis.AxisIndex;
+        _streamerCommit.YAxisIndex = _pltCommit.RightAxis.AxisIndex;
         _pltCommit.RightAxis.Ticks(true);
         _pltCommit.LeftAxis.Ticks(false);
         _pltCommit.RightAxis.Label("已提交 (%)");
 
-        WpUsed.Refresh();
-        WpCommit.Refresh();
+        ApUsed.Refresh();
+        ApCommit.Refresh();
     }
 
     public void GetMemory(object state)
@@ -197,17 +196,17 @@ public partial class MainWindow : Window
                     Title = Math.Round(_commitPctTitle, 0) + "%";
                 }
 
-                _plotUsed.Add(p1);
-                if (_plotUsed.Count != _plotUsed.CountTotalOnLastRender)
+                _streamerUsed.Add(p1);
+                if (_streamerUsed.Count != _streamerUsed.CountTotalOnLastRender)
                 {
-                    WpUsed.Refresh();
+                    ApUsed.Refresh();
                 }
 
                 double vv = _ema.Average;
-                _plotEma.Add(vv);
-                if (_plotEma.Count != _plotEma.CountTotalOnLastRender)
+                _streamerCommit.Add(vv);
+                if (_streamerCommit.Count != _streamerCommit.CountTotalOnLastRender)
                 {
-                    WpCommit.Refresh();
+                    ApCommit.Refresh();
                 }
             });
         }
