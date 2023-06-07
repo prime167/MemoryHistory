@@ -59,7 +59,7 @@ public partial class MainWindow : Window
 
         _ema = new ExponentialMovingAverageIndicator(DataCount);
         ResetCharts();
-        TimeSpan due = TimeSpan.FromMilliseconds(10);
+        TimeSpan due = TimeSpan.FromMilliseconds(0);
         TimeSpan period = TimeSpan.FromMilliseconds(1000);
         _timer = new Timer(GetMemory,null, due, period);
     }
@@ -98,6 +98,8 @@ public partial class MainWindow : Window
         ApUsed.Configuration.Zoom = false;
         ApUsed.Configuration.ScrollWheelZoom = false;
         ApUsed.Configuration.MiddleClickDragZoom = false;
+        _streamerUsed.OffsetX = -MaxPeriod;
+        _pltUsed.XAxis.TickLabelNotation(invertSign: true);
 
         //_pltCommit.SetAxisLimits(0, MaxPeriod, 0, 100, 1);
         //_pltCommit.YAxis2.SetZoomOutLimit(100);
@@ -108,6 +110,8 @@ public partial class MainWindow : Window
         ApCommit.Configuration.Zoom = false;
         ApCommit.Configuration.ScrollWheelZoom = false;
         ApCommit.Configuration.MiddleClickDragZoom = false;
+        _streamerCommit.OffsetX = -MaxPeriod;
+        _pltCommit.XAxis.TickLabelNotation(invertSign: true);
 
         // ”“≤‡œ‘ æY÷·
         _streamerUsed.YAxisIndex = _pltUsed.RightAxis.AxisIndex;
