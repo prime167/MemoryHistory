@@ -51,7 +51,7 @@ public partial class MainWindow : Window
         double width = Screens.Primary.Bounds.Width;
         double h1 = Screens.Primary.WorkingArea.Height;
         var main = this.GetControl<Window>("Main");
-        main.Position = new PixelPoint((int)((width - main.Width) / 2), (int)((h1 - main.Height) -32));
+        main.Position = new PixelPoint((int)((width - main.Width) / 2), (int)((h1 - main.Height) - 32));
 
         _pageFileSize = Math.Round(GetPageFileSize() / 1024.0, 2);
         _pltUsed = WpUsed.Plot;
@@ -108,8 +108,6 @@ public partial class MainWindow : Window
         WpCommit.Configuration.ScrollWheelZoom = false;
         WpCommit.Configuration.MiddleClickDragZoom = false;
 
-        WpUsed.Refresh();
-        WpCommit.Refresh();
 
         // 右侧显示Y轴
         _plotUsed.YAxisIndex = _pltUsed.RightAxis.AxisIndex;
@@ -123,6 +121,9 @@ public partial class MainWindow : Window
         _pltCommit.RightAxis.Ticks(true);
         _pltCommit.LeftAxis.Ticks(false);
         _pltCommit.RightAxis.Label("已提交 (%)");
+
+        WpUsed.Refresh();
+        WpCommit.Refresh();
     }
 
     public void GetMemory(object state)
