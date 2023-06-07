@@ -59,8 +59,9 @@ public partial class MainWindow : Window
 
         _ema = new ExponentialMovingAverageIndicator(DataCount);
         ResetCharts();
-
-        _timer = new Timer(GetMemory, null, 0, 1000);
+        TimeSpan due = TimeSpan.FromMilliseconds(10);
+        TimeSpan period = TimeSpan.FromMilliseconds(1000);
+        _timer = new Timer(GetMemory,null, due, period);
     }
 
     private void ResetCharts()
