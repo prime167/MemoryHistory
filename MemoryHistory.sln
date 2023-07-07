@@ -13,18 +13,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemoryUsage.WPF", "Memoryus
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemoryUsageAvalonia", "MemoryUsageAvalonia\MemoryUsageAvalonia.csproj", "{E0ED073F-CDE7-4397-B00F-1354D75303F3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScottPlot.WPF", "..\..\OtherCode\ScottPlot\src\ScottPlot4\ScottPlot.WPF\ScottPlot.WPF.csproj", "{DB2BF168-584E-4F74-8603-D9ACE62DA503}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScottPlot", "..\..\OtherCode\ScottPlot\src\ScottPlot4\ScottPlot\ScottPlot.csproj", "{578DBA45-96AC-4054-844D-4DD6C323A605}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScottPlot.Avalonia", "..\..\OtherCode\ScottPlot\src\ScottPlot4\ScottPlot.Avalonia\ScottPlot.Avalonia.csproj", "{1FFF4644-A77F-4C79-9AF1-F9FF4490DCEE}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemoryUsage.Common", "MemoryUsage.Common\MemoryUsage.Common.csproj", "{965FA443-73EC-49F1-B774-DA132409CF2C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0DD8C087-0122-4B08-81C9-0BA720FB7BA1}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScottPlot.Avalonia", "..\..\OtherCode\ScottPlot-avalonia11\src\ScottPlot4\ScottPlot.Avalonia\ScottPlot.Avalonia.csproj", "{E66F255B-FE6E-4177-9273-722CBB639AA3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScottPlot", "..\..\OtherCode\ScottPlot-avalonia11\src\ScottPlot4\ScottPlot\ScottPlot.csproj", "{62CACADC-B78D-4734-900A-40D57E0CECBE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,22 +50,18 @@ Global
 		{E0ED073F-CDE7-4397-B00F-1354D75303F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0ED073F-CDE7-4397-B00F-1354D75303F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0ED073F-CDE7-4397-B00F-1354D75303F3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DB2BF168-584E-4F74-8603-D9ACE62DA503}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DB2BF168-584E-4F74-8603-D9ACE62DA503}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DB2BF168-584E-4F74-8603-D9ACE62DA503}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DB2BF168-584E-4F74-8603-D9ACE62DA503}.Release|Any CPU.Build.0 = Release|Any CPU
-		{578DBA45-96AC-4054-844D-4DD6C323A605}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{578DBA45-96AC-4054-844D-4DD6C323A605}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{578DBA45-96AC-4054-844D-4DD6C323A605}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{578DBA45-96AC-4054-844D-4DD6C323A605}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1FFF4644-A77F-4C79-9AF1-F9FF4490DCEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1FFF4644-A77F-4C79-9AF1-F9FF4490DCEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1FFF4644-A77F-4C79-9AF1-F9FF4490DCEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1FFF4644-A77F-4C79-9AF1-F9FF4490DCEE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{965FA443-73EC-49F1-B774-DA132409CF2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{965FA443-73EC-49F1-B774-DA132409CF2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{965FA443-73EC-49F1-B774-DA132409CF2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{965FA443-73EC-49F1-B774-DA132409CF2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E66F255B-FE6E-4177-9273-722CBB639AA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E66F255B-FE6E-4177-9273-722CBB639AA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E66F255B-FE6E-4177-9273-722CBB639AA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E66F255B-FE6E-4177-9273-722CBB639AA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62CACADC-B78D-4734-900A-40D57E0CECBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62CACADC-B78D-4734-900A-40D57E0CECBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62CACADC-B78D-4734-900A-40D57E0CECBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62CACADC-B78D-4734-900A-40D57E0CECBE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
