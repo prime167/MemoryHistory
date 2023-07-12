@@ -3,10 +3,59 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:scottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:local="clr-namespace:MemoryUsageAvalonia"
+        xmlns:vm="using:MemoryUsage.Common"
+        Name="Main"
+        mc:Ignorable="d" Height="500" Width="1350" Opened="Main_OnOpened"
         x:Class="MemoryUsageAvalonia.MainWindow"
         Title="MemoryUsageAvalonia">
-    <Grid>
-        <scottPlot:AvaPlot Name="AvaPlot1"/>
+    <Window.Resources>
+        <local:Trailing0Converter x:Key="Trailing0Converter"/>
+    </Window.Resources>
+    <Grid ColumnDefinitions="*,*" RowDefinitions="2*,*">
+        <scottPlot:AvaPlot Name="ApUsed" Grid.Row="0" Grid.Column="0"/>
+        <scottPlot:AvaPlot Name="ApCommit" Grid.Row="0" Grid.Column="1"/>
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,5" RowDefinitions="*,*,*,*"
+              ColumnDefinitions="50,60,50,30,*,50,60,50,30,*">
+            <Grid.Styles>
+                <Style Selector="Label">
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="FontFamily" Value="Microsoft Yahei"/>
+                </Style>
+            </Grid.Styles>
+            <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" Content="内存占用 %" HorizontalAlignment="Center" FontSize="15" FontWeight="Bold" />
+
+            <Label Grid.Row="1" Grid.Column="1" Content="当前:" />
+            <Label Grid.Row="1" Grid.Column="2" Content="{Binding CurrentUsedPct, Converter={StaticResource Trailing0Converter}, FallbackValue=52}" HorizontalContentAlignment="Right" />
+            <Label Grid.Row="1" Grid.Column="3" Content="%" HorizontalContentAlignment="Left" />
+
+            <Label Grid.Row="2" Grid.Column="1" Content="最小:" />
+            <Label Grid.Row="2" Grid.Column="2" Content="{Binding MinUsedPct, Converter={StaticResource Trailing0Converter}, FallbackValue=5}" HorizontalContentAlignment="Right" />
+            <Label Grid.Row="2" Grid.Column="3" Content="%"  HorizontalContentAlignment="Left"/>
+            <Label Grid.Row="2" Grid.Column="4" Content="{Binding MinUsedPctTimeStr, FallbackValue=20 Min ago}" HorizontalContentAlignment="Left"/>
+            <Label Grid.Row="3" Grid.Column="1" Content="最大:" />
+            <Label Grid.Row="3" Grid.Column="2" Content="{Binding MaxUsedPct, Converter={StaticResource Trailing0Converter}, FallbackValue=79}" HorizontalContentAlignment="Right"/>
+            <Label Grid.Row="3" Grid.Column="3" Content="%"  HorizontalContentAlignment="Left"/>
+            <Label Grid.Row="3" Grid.Column="4" Content="{Binding MaxUsedPctTimeStr, FallbackValue=2 Min ago}" HorizontalContentAlignment="Left"/>
+
+            <Label Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="4" Content="虚拟内存占用" HorizontalAlignment="Center" FontSize="15" FontWeight="Bold"/>
+            <Label Grid.Row="1" Grid.Column="6" Content="当前:" />
+            <Label Grid.Row="1" Grid.Column="7" Content="{Binding CurrentCommitPct, Converter={StaticResource Trailing0Converter}, FallbackValue=3.5}" HorizontalContentAlignment="Right"/>
+            <Label Grid.Row="1" Grid.Column="8" Content="%"  HorizontalContentAlignment="Left"/>
+            <StackPanel Grid.Row="1" Grid.Column="9" Orientation="Horizontal">
+                <Label  Content="{Binding CommitDetailStr, FallbackValue=31G / 40G }"  HorizontalContentAlignment="Left"/>
+                <Label Margin="20,0"  Content="{Binding PageFileDetailStr, FallbackValue=1G / 8G }"  HorizontalContentAlignment="Left"/>
+            </StackPanel>
+
+            <Label Grid.Row="2" Grid.Column="6" Content="最小:" />
+            <Label Grid.Row="2" Grid.Column="7" Content="{Binding MinCommitPct, Converter={StaticResource Trailing0Converter}, FallbackValue=1}" HorizontalContentAlignment="Right"/>
+            <Label Grid.Row="2" Grid.Column="8" Content="%" HorizontalContentAlignment="Left"/>
+            <Label Grid.Row="2" Grid.Column="9" Content="{Binding MinCommitPctTimeStr, FallbackValue=21 Min ago}" HorizontalContentAlignment="Left"/>
+
+            <Label Grid.Row="3" Grid.Column="6" Content="最大:" />
+            <Label Grid.Row="3" Grid.Column="7" Content="{Binding MaxCommitPct, Converter={StaticResource Trailing0Converter}, FallbackValue=4}" HorizontalContentAlignment="Right"/>
+            <Label Grid.Row="3" Grid.Column="8" Content="%" HorizontalContentAlignment="Left" />
+            <Label Grid.Row="3" Grid.Column="9" Content="{Binding MaxCommitPctTimeStr, FallbackValue=45 Min ago}" HorizontalContentAlignment="Left"/>
+        </Grid>
     </Grid>
 </Window>

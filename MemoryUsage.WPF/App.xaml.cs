@@ -1,8 +1,6 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
+﻿using System.Windows;
 
-namespace MemoryUsage
+namespace MemoryUsage.WPF
 {
     /// <summary>
     /// Interaction logic for App.xaml

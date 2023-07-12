@@ -1,12 +1,12 @@
-﻿using System;
-using System.Diagnostics;
-using System.Drawing;
+﻿using System.Diagnostics;
 using System.Management;
 using System.Windows;
+using MemoryUsage.Common;
 using ScottPlot;
 using ScottPlot.Plottable;
+using ScottPlot.Plottable.DataLoggerViews;
 
-namespace MemoryUsage;
+namespace MemoryUsage.WPF;
 
 public partial class MainWindow : Window
 {
@@ -15,21 +15,16 @@ public partial class MainWindow : Window
     /// <summary>
     /// 显示的时间范围
     /// </summary>
-    private const int MaxPeriod = 60 * 60; // s
+    private const int MaxPeriod = 60 * 30; // s
 
     private double _pageFileSize;
     private static readonly object Locker = new();
     private const int DataCount = 10;// 移动平均最近点数;
 
-    public double[] Percentages = new double[MaxPeriod];
-    public double[] Commits = new double[MaxPeriod];
-    public double[] CommitsEma = new double[MaxPeriod];
-
     private ExponentialMovingAverageIndicator _ema;
 
-    private SignalPlot _plotUsed;
-    private SignalPlot _plotCurrentCommit;
-    private SignalPlot _plotEma;// ema
+    private ScatterDataLogger _plotUsed;
+    private ScatterDataLogger _plotEma;// ema
     private double _commitPctTitle;
 
     public MemoryViewModel Vm = new();
@@ -61,10 +56,22 @@ public partial class MainWindow : Window
         _ema = new ExponentialMovingAverageIndicator(DataCount);
         ResetCharts();
 
-        _plotUsed = _pltUsed.AddSignal(Percentages, color: Color.Green, label: "used");
-        _plotCurrentCommit = _pltCommit.AddSignal(Commits, color: Color.Silver, label: "now"); ;
-        _plotEma = _pltCommit.AddSignal(CommitsEma, color: Color.Red, label: "ema");
-        _pltCommit.Legend(location: Alignment.UpperLeft);
+        _plotUsed = _pltUsed.AddScatterLogger();
+        _plotUsed.LoggerView = new Slide { PaddingFraction = 0, ViewWidth = MaxPeriod };
+
+        _plotEma = _pltCommit.AddScatterLogger();
+        _plotEma.LoggerView = new Slide { PaddingFraction = 0, ViewWidth = MaxPeriod };
+
+        _pltUsed.SetAxisLimits(0, null, 0, 100);
+        _pltCommit.SetAxisLimits(0, null, 0, 100);
+
+        _plotUsed.Add(0, 1);
+        _plotUsed.Add(1, 2);
+        WpUsed.Refresh();
+
+        _plotEma.Add(0, 1);
+        _plotEma.Add(1, 2);
+        WpCommit.Refresh();
 
         // 右侧显示Y轴
         _plotUsed.YAxisIndex = _pltUsed.RightAxis.AxisIndex;
@@ -74,29 +81,11 @@ public partial class MainWindow : Window
         //_pltUsed.YLabel("使用中 (%)");
 
         // 右侧显示Y轴
-        _plotCurrentCommit.YAxisIndex = _pltCommit.RightAxis.AxisIndex;
         _plotEma.YAxisIndex = _pltCommit.RightAxis.AxisIndex;
         _pltCommit.RightAxis.Ticks(true);
         _pltCommit.LeftAxis.Ticks(false);
         _pltCommit.RightAxis.Label("已提交 (%)");
         //_pltCommit.YLabel("已提交 (%)");
-
-        _plotUsed.MarkerSize = 1;
-        _plotCurrentCommit.MarkerSize = 1;
-        _plotEma.MarkerSize = 1;
-
-        _plotUsed.MarkerShape = MarkerShape.none;
-        _plotCurrentCommit.MarkerShape = MarkerShape.none;
-        _plotEma.MarkerShape = MarkerShape.none;
-
-        // x轴坐标逆序 MaxPeriod ~ 0
-        static string CustomTickFormatter(double position)
-        {
-            return $"{MaxPeriod - position}";
-        }
-
-        _pltUsed.XAxis.TickLabelFormat(CustomTickFormatter);
-        _pltCommit.XAxis.TickLabelFormat(CustomTickFormatter);
 
         _timer = new Timer(GetMemory, null, 0, 1000);
     }
@@ -129,18 +118,6 @@ public partial class MainWindow : Window
         WpCommit.Refresh();
     }
 
-    /// <summary>
-    /// 数组元素左移 [1,2,3] => [2,3,null] 然后加入新元素
-    /// </summary>
-    /// <param name="array"></param>
-    /// <param name="last"></param>
-    private static void UpdateArray(double[] array, double last)
-    {
-        int len = array.Length;
-        Array.Copy(array, 1, array, 0, len - 1);
-        array[^1] = last;
-    }
-
     public void GetMemory(object state)
     {
         double p1;
@@ -159,12 +136,7 @@ public partial class MainWindow : Window
             p2 = (virtualUsed / mi.TotalVirtualMemorySize) * 100;
             p2 = Math.Round(p2, 1);
 
-            UpdateArray(Percentages, p1);
-            UpdateArray(Commits, p2);
-
             _ema.AddDataPoint(p2);
-            double vv = _ema.Average;
-            UpdateArray(CommitsEma, vv);
         }
 
         Vm.CurrentUsedPct = p1;
@@ -216,10 +188,18 @@ public partial class MainWindow : Window
                     Title = Math.Round(_commitPctTitle, 0) + "%";
                 }
 
-                WpUsed.Render();
-                WpCommit.Render();
-                _pltUsed.AxisAuto();
-                _pltCommit.AxisAuto();
+                _plotUsed.Add(_plotEma.Count, p1);
+                if (_plotUsed.Count != _plotUsed.LastRenderCount)
+                {
+                    WpUsed.Refresh();
+                }
+
+                double vv = _ema.Average;
+                _plotEma.Add(_plotEma.Count, vv);
+                if (_plotEma.Count != _plotEma.LastRenderCount)
+                {
+                    WpCommit.Refresh();
+                }
             });
         }
         catch (Exception e)

@@ -1,4 +1,4 @@
-﻿namespace MemoryUsage;
+﻿namespace MemoryUsage.Common;
 
 public class MemoryInfo
 {
