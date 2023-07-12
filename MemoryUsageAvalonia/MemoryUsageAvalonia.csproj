@@ -21,13 +21,11 @@
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.*" />
-    <!--<PackageReference Include="ScottPlot.Avalonia" Version="4.1.*" />-->
+    <PackageReference Include="ScottPlot.Avalonia" Version="4.1.*" />
     <PackageReference Include="System.Management" Version="8.0.0-preview.*" />
   </ItemGroup>
         
   <ItemGroup>
-    <ProjectReference Include="..\..\..\OtherCode\ScottPlot-avalonia11\src\ScottPlot4\ScottPlot.Avalonia\ScottPlot.Avalonia.csproj" />
-    <ProjectReference Include="..\..\..\OtherCode\ScottPlot-avalonia11\src\ScottPlot4\ScottPlot\ScottPlot.csproj" />
     <ProjectReference Include="..\MemoryUsage.Common\MemoryUsage.Common.csproj" />
   </ItemGroup>
 </Project>
