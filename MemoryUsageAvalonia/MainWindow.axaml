@@ -44,7 +44,7 @@
             <Label Grid.Row="1" Grid.Column="8" Content="%"  HorizontalContentAlignment="Left"/>
             <StackPanel Grid.Row="1" Grid.Column="9" Orientation="Horizontal">
                 <Label  Content="{Binding CommitDetailStr, FallbackValue=31G / 40G }"  HorizontalContentAlignment="Left"/>
-                <Label Margin="20,0"  Content="{Binding PageFileDetailStr, FallbackValue=1G / 8G }"  HorizontalContentAlignment="Left"/>
+                <Label Margin="20,0"  Content="{Binding PageFileDetailStr, FallbackValue=1G / 8G }"  HorizontalContentAlignment="Left" IsVisible="False"/>
             </StackPanel>
 
             <Label Grid.Row="2" Grid.Column="6" Content="最小:" />
