@@ -11,7 +11,7 @@ public partial class MainWindow : Window
 {
     private Logger _logger = LogManager.GetCurrentClassLogger();
 
-    private readonly List<ProcessPlotInfo> _processPlotInfos = new List<ProcessPlotInfo>(10);
+    private readonly List<ProcessPlotInfo> _processPlotInfos = new(10);
 
     public MainWindow()
     {
