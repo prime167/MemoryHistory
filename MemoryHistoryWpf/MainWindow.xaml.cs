@@ -24,8 +24,8 @@ public partial class MainWindow : Window
         var ps1 = new ProcessPlotInfo(me, 600, WpfPlot1);
         var ps2 = new ProcessPlotInfo(me, 60, WpfPlot2);
 
-        var ps3 = new ProcessPlotInfo("msedge", 600, WpfPlot3);
-        var ps4 = new ProcessPlotInfo("msedge", 60, WpfPlot4, true);
+        var ps3 = new ProcessPlotInfo("firefox", 600, WpfPlot3);
+        var ps4 = new ProcessPlotInfo("firefox", 60, WpfPlot4, true);
 
         var ps5 = new ProcessPlotInfo("vivaldi", 600, WpfPlot5);
         var ps6 = new ProcessPlotInfo("vivaldi", 60, WpfPlot6);
