@@ -5,7 +5,7 @@
         xmlns:scottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
         xmlns:local="clr-namespace:MemoryUsageAvalonia"
         xmlns:vm="using:MemoryUsage.Common"
-        Name="Main"
+        Name="Main" Icon="assets/memory.ico"
         mc:Ignorable="d" Height="500" Width="1350" Opened="Main_OnOpened"
         x:Class="MemoryUsageAvalonia.MainWindow"
         Title="MemoryUsageAvalonia">
