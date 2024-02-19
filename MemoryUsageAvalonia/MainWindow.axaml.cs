@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using Avalonia.Controls;
-using ScottPlot.Plottable;
+//using ScottPlot.Plottable;
 using ScottPlot;
 using Avalonia.Threading;
 using System.Diagnostics;
@@ -9,6 +9,7 @@ using System.Management;
 using System.Linq;
 using Avalonia;
 using MemoryUsage.Common;
+using ScottPlot.Plottables;
 
 namespace MemoryUsageAvalonia;
 
@@ -69,62 +70,68 @@ public partial class MainWindow : Window
         _pltUsed.Clear();
         _pltCommit.Clear();
 
-        ApUsed.Configuration.DoubleClickBenchmark = false;
-        ApCommit.Configuration.DoubleClickBenchmark = false;
+        ApUsed.Plot.Benchmark.IsVisible = false;
+        ApCommit.Plot.Benchmark.IsVisible = false;
 
-        _pltUsed.XAxis.MinimumTickSpacing(1);
-        _pltUsed.YAxis.MinimumTickSpacing(5);
-        _pltUsed.Grid();
+        //_pltUsed.XAxis.MinimumTickSpacing(1);
+        //_pltUsed.YAxis.MinimumTickSpacing(5);
+        //_pltUsed.Grid();
         _pltUsed.XLabel("时间 (s)");
         _pltUsed.Title("内存使用 %");
 
-        _pltCommit.XAxis.MinimumTickSpacing(1);
-        _pltCommit.YAxis.MinimumTickSpacing(5);
+        //_pltCommit.XAxis.MinimumTickSpacing(1);
+        //_pltCommit.YAxis.MinimumTickSpacing(5);
         _pltCommit.XLabel("时间 (s)");
         _pltCommit.Title("虚拟内存 %");
 
-        _streamerUsed = _pltUsed.AddDataStreamer(MaxPeriod);
+        _streamerUsed = _pltUsed.Add.DataStreamer(MaxPeriod);
         _streamerUsed.ViewScrollLeft();
 
-        _streamerCommit = _pltCommit.AddDataStreamer(MaxPeriod);
+        _streamerCommit = _pltCommit.Add.DataStreamer(MaxPeriod);
         _streamerCommit.ViewScrollLeft();
 
-        //_pltUsed.SetAxisLimits(0, MaxPeriod, 0, 100, 1);
+        _pltUsed.Axes.SetLimitsX(0, MaxPeriod);
+        _pltUsed.Axes.SetLimitsY(0, 100);
         //_pltUsed.YAxis2.SetZoomOutLimit(100);
         //_pltUsed.YAxis2.SetZoomInLimit(0);
-        _pltUsed.YAxis2.SetBoundary(0, 100);
-        _pltUsed.YAxis2.SetInnerBoundary(0, 100);
-        ApUsed.Configuration.Pan = false;
-        ApUsed.Configuration.Zoom = false;
-        ApUsed.Configuration.ScrollWheelZoom = false;
-        ApUsed.Configuration.MiddleClickDragZoom = false;
-        _streamerUsed.OffsetX = -MaxPeriod;
-        _pltUsed.XAxis.TickLabelNotation(invertSign: true);
+        //_pltUsed.YAxis2.SetBoundary(0, 100);
+        //_pltUsed.YAxis2.SetInnerBoundary(0, 100);
+        //ApUsed.Configuration.Pan = false;
+        //ApUsed.Configuration.Zoom = false;
+        //ApUsed.Configuration.ScrollWheelZoom = false;
+        //ApUsed.Configuration.MiddleClickDragZoom = false;
+        _streamerUsed.Data.OffsetX = -MaxPeriod;
+        //_pltUsed.XAxis.TickLabelNotation(invertSign: true);
 
-        //_pltCommit.SetAxisLimits(0, MaxPeriod, 0, 100, 1);
+        _pltCommit.Axes.SetLimitsX(0, MaxPeriod);
+        _pltCommit.Axes.SetLimitsY(0,100);
         //_pltCommit.YAxis2.SetZoomOutLimit(100);
         //_pltCommit.YAxis2.SetZoomInLimit(0);
-        _pltCommit.YAxis2.SetBoundary(0, 100);
-        _pltCommit.YAxis2.SetInnerBoundary(0, 100);
-        ApCommit.Configuration.Pan = false;
-        ApCommit.Configuration.Zoom = false;
-        ApCommit.Configuration.ScrollWheelZoom = false;
-        ApCommit.Configuration.MiddleClickDragZoom = false;
-        _streamerCommit.OffsetX = -MaxPeriod;
-        _pltCommit.XAxis.TickLabelNotation(invertSign: true);
+        //_pltCommit.YAxis2.SetBoundary(0, 100);
+        //_pltCommit.YAxis2.SetInnerBoundary(0, 100);
+        //ApCommit.Configuration.Pan = false;
+        //ApCommit.Configuration.Zoom = false;
+        //ApCommit.Configuration.ScrollWheelZoom = false;
+        //ApCommit.Configuration.MiddleClickDragZoom = false;
+        _streamerCommit.Data.OffsetX = -MaxPeriod;
+        //_pltCommit.XAxis.TickLabelNotation(invertSign: true);
 
         // 右侧显示Y轴
-        _streamerUsed.YAxisIndex = _pltUsed.RightAxis.AxisIndex;
-        _pltUsed.RightAxis.Ticks(true);
-        _pltUsed.LeftAxis.Ticks(false);
-        _pltUsed.RightAxis.Label("使用中 (%)");
-        _pltUsed.YLabel("使用中 (%)");
+        //_streamerUsed.Axes.YAxis = _pltUsed.Axes.Right;
+        //_pltUsed.Axes.Right.TickLabelStyle = 
+        //_pltUsed.LeftAxis.Ticks(false);
+        //_pltUsed.RightAxis.Label("使用中 (%)");
+        //_pltUsed.YLabel("使用中 (%)");
 
         // 右侧显示Y轴
-        _streamerCommit.YAxisIndex = _pltCommit.RightAxis.AxisIndex;
-        _pltCommit.RightAxis.Ticks(true);
-        _pltCommit.LeftAxis.Ticks(false);
-        _pltCommit.RightAxis.Label("已提交 (%)");
+        //_streamerCommit.Axes.YAxis = _pltUsed.Axes.Right;
+
+        //_streamerCommit.YAxisIndex = _pltCommit.RightAxis.AxisIndex;
+        //_pltCommit.RightAxis.Ticks(true);
+        //_pltCommit.LeftAxis.Ticks(false);
+        //_pltCommit.RightAxis.Label("已提交 (%)");
+        ApUsed.Plot.Style.SetBestFonts();
+        ApCommit.Plot.Style.SetBestFonts();
 
         ApUsed.Refresh();
         ApCommit.Refresh();
@@ -198,18 +205,20 @@ public partial class MainWindow : Window
                 if (Math.Abs(_commitPctTitle - p2) >= 1)
                 {
                     _commitPctTitle = p2;
-                    Title = Math.Round(_commitPctTitle, 0) + "%";
+                    double v = Math.Round(_commitPctTitle, 0);
+                    double u = Math.Round(p1, 0);
+                    Title = $"{u}% {v}%";
                 }
 
                 _streamerUsed.Add(p1);
-                if (_streamerUsed.Count != _streamerUsed.CountTotalOnLastRender)
+                if (_streamerUsed.Data.Length != _streamerUsed.Data.CountTotalOnLastRender)
                 {
                     ApUsed.Refresh();
                 }
 
                 double vv = _ema.Average;
                 _streamerCommit.Add(vv);
-                if (_streamerCommit.Count != _streamerCommit.CountTotalOnLastRender)
+                if (_streamerCommit.Data.Length != _streamerCommit.Data.CountTotalOnLastRender)
                 {
                     ApCommit.Refresh();
                 }
