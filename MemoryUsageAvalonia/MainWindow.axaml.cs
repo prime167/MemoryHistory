@@ -130,8 +130,8 @@ public partial class MainWindow : Window
         //_pltCommit.RightAxis.Ticks(true);
         //_pltCommit.LeftAxis.Ticks(false);
         //_pltCommit.RightAxis.Label("“—Ã·Ωª (%)");
-        ApUsed.Plot.Style.SetBestFonts();
-        ApCommit.Plot.Style.SetBestFonts();
+        ApUsed.Plot.Font.Automatic();
+        ApCommit.Plot.Font.Automatic();
 
         ApUsed.Refresh();
         ApCommit.Refresh();
