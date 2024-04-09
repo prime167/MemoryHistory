@@ -1,0 +1,1 @@
+dotnet publish MemoryUsageAvalonia/MemoryUsageAvalonia.csproj -c Release -o publish -r win-x64
