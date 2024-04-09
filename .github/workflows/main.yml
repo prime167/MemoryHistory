@@ -28,7 +28,7 @@ jobs:
       - name: Build
         run: dotnet build -c Release
       - name: Publish
-        run: dotnet publish MemoryUsageAvalonia/MemoryUsageAvalonia.csproj -c Release -o publish -r ${{ matrix.platform }} --self-contained
+        run: dotnet publish MemoryUsageAvalonia/MemoryUsageAvalonia.csproj -c Release -o publish -r ${{ matrix.platform }}
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
