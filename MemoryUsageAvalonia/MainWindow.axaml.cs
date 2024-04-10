@@ -94,7 +94,7 @@ public partial class MainWindow : Window
 
         // 右侧显示Y轴
         //_streamerUsed.Axes.YAxis = _pltUsed.Axes.Right;
-        _pltUsed.YLabel("使用中 (%)");
+        //_pltUsed.YLabel("使用中 (%)");
 
         // 右侧显示Y轴
         //_streamerCommit.Axes.YAxis = _pltUsed.Axes.Right;
@@ -102,7 +102,7 @@ public partial class MainWindow : Window
         //_streamerCommit.YAxisIndex = _pltCommit.RightAxis.AxisIndex;
         //_pltCommit.RightAxis.Ticks(true);
         //_pltCommit.LeftAxis.Ticks(false);
-        _pltCommit.YLabel("已提交 (%)");
+        //_pltCommit.YLabel("已提交 (%)");
         ApUsed.Plot.Font.Automatic();
         ApCommit.Plot.Font.Automatic();
 
