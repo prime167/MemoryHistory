@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Project Path="MemoryHistoryWpf\MemHistoryWpf.csproj" />
+  <Project Path="MemoryUsage.Common\MemoryUsage.Common.csproj" />
+  <Project Path="MemoryUsageAvalonia\MemoryUsageAvalonia.csproj" />
+</Solution>
