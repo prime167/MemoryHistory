@@ -23,7 +23,7 @@ public partial class MainWindow : Window
     private const int MaxPeriod = 60 * 30; // s
 
     private double _pageFileSize;
-    private static readonly object Locker = new();
+    private static readonly Lock Locker = new();
     private const int DataCount = 10; // 移动平均最近点数;
 
     private ExponentialMovingAverageIndicator _ema;
