@@ -31,7 +31,7 @@
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.*" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.*" />
         <PackageReference Include="ScottPlot.Avalonia" Version="5.1.*" />
-        <PackageReference Include="System.Management" Version="9.0.*" />
+        <PackageReference Include="System.Management" Version="10.0.*" />
         <PackageReference Include="NodaTime" Version="3.2.*" />
     </ItemGroup>
 
