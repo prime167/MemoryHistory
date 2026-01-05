@@ -9,7 +9,7 @@
 
   <ItemGroup>
       <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.*" />
-    <PackageReference Include="NodaTime" Version="3.2.*" />
+    <PackageReference Include="NodaTime" Version="3.3.*" />
   </ItemGroup>
 
 </Project>
