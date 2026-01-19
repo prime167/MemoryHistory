@@ -72,6 +72,9 @@ public partial class MainWindow : Window
 
         ApUsed.Plot.Benchmark.IsVisible = false;
         ApCommit.Plot.Benchmark.IsVisible = false;
+        
+        ApUsed.UserInputProcessor.IsEnabled = false;
+        ApCommit.UserInputProcessor.IsEnabled = false;
 
         _pltUsed.XLabel("时间 (s)");
         _pltUsed.Title("内存使用 %");
@@ -222,13 +225,11 @@ public partial class MainWindow : Window
     public static uint GetPageFileSize()
     {
         uint total = 0;
-        using (var query = new ManagementObjectSearcher("SELECT AllocatedBaseSize FROM Win32_PageFileUsage"))
+        using var query = new ManagementObjectSearcher("SELECT AllocatedBaseSize FROM Win32_PageFileUsage");
+        foreach (ManagementBaseObject obj in query.Get())
         {
-            foreach (ManagementBaseObject obj in query.Get())
-            {
-                uint used = (uint)obj.GetPropertyValue("AllocatedBaseSize");
-                total += used;
-            }
+            uint used = (uint)obj.GetPropertyValue("AllocatedBaseSize");
+            total += used;
         }
 
         return total;
